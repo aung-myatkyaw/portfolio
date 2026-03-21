@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "canisters": {
+    "portfolio": {
+      "type": "assets",
+      "source": ["dist"]
+    }
+  },
+  "defaults": {
+    "build": {
+      "packtool": ""
+    }
+  },
+  "output_env_file": ".env.dfx"
+}
