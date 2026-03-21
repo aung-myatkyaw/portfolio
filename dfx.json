@@ -3,7 +3,8 @@
   "canisters": {
     "portfolio": {
       "type": "assets",
-      "source": ["dist"]
+      "source": ["dist"],
+      "build": ["npm run build -- --mode production"]
     }
   },
   "defaults": {
@@ -11,5 +12,5 @@
       "packtool": ""
     }
   },
-  "output_env_file": ".env.dfx"
+  "output_env_file": ".env.dfx.local"
 }
