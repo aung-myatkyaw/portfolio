@@ -1,8 +1,10 @@
 import { motion } from 'framer-motion';
 import { useState, useCallback, useRef } from 'react';
 import { FaLinkedin, FaGithub, FaGitlab, FaEnvelope, FaMapMarkerAlt } from 'react-icons/fa';
+import { FiCpu } from 'react-icons/fi';
 import emailjs from '@emailjs/browser';
 import { Turnstile } from '@marsidev/react-turnstile';
+import AskMe from './AskMe';
 
 const COOLDOWN_MS = 120_000;
 
@@ -213,6 +215,30 @@ const Contact = () => {
               <span className="sr-only">{link.name}</span>
             </motion.a>
           ))}
+        </motion.div>
+
+        {/* AI Agent section */}
+        <motion.div variants={itemVariants} className="mb-10">
+          <div className="card p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="flex-shrink-0 w-9 h-9 rounded-full bg-primary-600/20 dark:bg-primary-500/20 flex items-center justify-center">
+                <FiCpu className="w-5 h-5 text-primary-500" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-gray-800 dark:text-white leading-tight">
+                  Ask the AI Agent
+                </h3>
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-primary-400 animate-pulse" />
+                  <span className="text-xs font-mono text-primary-400">ICP Backend Canister · OpenRouter</span>
+                </div>
+              </div>
+            </div>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-5">
+              Have questions before reaching out? This AI agent knows Aung's background — ask about his skills, experience, or certifications.
+            </p>
+            <AskMe />
+          </div>
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">

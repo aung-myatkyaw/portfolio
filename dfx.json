@@ -1,10 +1,16 @@
 {
   "version": 1,
   "canisters": {
+    "backend": {
+      "type": "rust",
+      "candid": "src/backend/backend.did",
+      "package": "backend"
+    },
     "portfolio": {
       "type": "assets",
       "source": ["dist"],
-      "build": ["npm run build -- --mode production"]
+      "build": ["npm run build -- --mode production"],
+      "dependencies": ["backend"]
     }
   },
   "defaults": {

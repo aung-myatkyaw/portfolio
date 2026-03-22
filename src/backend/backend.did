@@ -1,0 +1,6 @@
+type AskResult = variant { Ok : text; Err : text };
+
+service : {
+  ask_about_me : (text) -> (AskResult);
+  set_api_key  : (text) -> ();
+};
