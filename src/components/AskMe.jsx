@@ -19,7 +19,7 @@ const idlFactory = ({ IDL }) => {
 let actorCache = null;
 
 // Runtime check — works regardless of how the bundle was built.
-// Local DFX serves from *.localhost or 127.0.0.1; mainnet never does.
+// Local ICP network serves from *.localhost or 127.0.0.1; mainnet never does.
 const isLocal =
   window.location.hostname === 'localhost' ||
   window.location.hostname === '127.0.0.1' ||

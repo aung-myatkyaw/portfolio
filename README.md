@@ -44,7 +44,7 @@ A modern, responsive portfolio website for a Senior DevSecOps Engineer, featurin
 | AI Agent (frontend) | `@dfinity/agent` — calls Rust backend canister |
 | AI Agent (backend) | Rust canister on ICP, HTTPS outcalls to OpenRouter |
 | AI Model | `openrouter/auto` (free tier, auto-routed) |
-| Deployment | Internet Computer (ICP) — DFX CLI |
+| Deployment | Internet Computer (ICP) — ICP CLI |
 | Compression | vite-plugin-compression2 (Brotli + Gzip) |
 
 ---
@@ -60,23 +60,23 @@ npm run dev
 
 ### Full stack (frontend + backend canister)
 
-Requires [Rust](https://rustup.rs/) with the `wasm32-unknown-unknown` target and [DFX CLI](https://internetcomputer.org/docs/current/developer-docs/setup/install/):
+Requires [Rust](https://rustup.rs/) with the `wasm32-unknown-unknown` target and [ICP CLI](https://cli.internetcomputer.org/):
 
 ```bash
 rustup target add wasm32-unknown-unknown
 cargo install cargo-audit   # optional: vulnerability scanning
 
-# Start local ICP replica
-dfx start --background
+# Start local ICP network
+icp network start -d
 
 # Deploy both canisters locally
-dfx deploy
+icp deploy
 
 # Set the OpenRouter API key on the local backend canister
-dfx canister call backend set_api_key '("your-openrouter-api-key")'
+icp canister call backend set_api_key '("your-openrouter-api-key")'
 ```
 
-The DFX local replica runs at `http://localhost:4943`. The frontend auto-detects local vs. mainnet at runtime via `window.location.hostname`.
+The local ICP network runs at `http://localhost:4943`. The frontend auto-detects local vs. mainnet at runtime via `window.location.hostname`.
 
 ### Environment variables
 
@@ -88,7 +88,7 @@ The DFX local replica runs at `http://localhost:4943`. The frontend auto-detects
 | `VITE_TURNSTILE_SITE_KEY` | Cloudflare Turnstile site key | Anti-spam |
 | `VITE_BACKEND_CANISTER_ID` | ICP backend canister ID | AI agent |
 
-Set in `.env.production` for mainnet builds, `.env.local` for local overrides. Both are gitignored. DFX also writes `.env.dfx.local` automatically with local canister IDs.
+Set in `.env.production` for mainnet builds, `.env.local` for local overrides. Both are gitignored.
 
 ---
 
@@ -96,39 +96,46 @@ Set in `.env.production` for mainnet builds, `.env.local` for local overrides. B
 
 ### Prerequisites
 
-- `dfx` installed
+- `icp` CLI installed
 - Rust + `wasm32-unknown-unknown` target
 - ICP identity with sufficient cycles (see cost table below)
 
 ### First-time mainnet deployment
 
 ```bash
-# 1. Deploy backend to same subnet as the existing frontend canister
-dfx deploy backend --network ic --with-cycles 1000000000000 --next-to trwm2-7aaaa-aaaal-qwm6q-cai
+# 1. Deploy backend canister on mainnet with an initial cycles balance
+icp deploy backend -e ic --cycles 1t
 
 # 2. Set the OpenRouter API key (one-time; persisted to stable memory across upgrades)
-dfx canister call backend set_api_key '("your-openrouter-api-key")' --network ic
+icp canister call backend set_api_key '("your-openrouter-api-key")' -e ic
 
 # 3. Update VITE_BACKEND_CANISTER_ID in .env.production with the new mainnet canister ID
 
 # 4. Deploy the frontend with the updated env
-dfx deploy portfolio --network ic
+icp deploy portfolio -e ic
 ```
 
 ### Subsequent deployments (upgrade)
 
 ```bash
 # Backend upgrade — API key is preserved via pre_upgrade/post_upgrade hooks
-dfx deploy backend --network ic
+icp deploy backend -e ic
 
 # Frontend redeploy
-dfx deploy portfolio --network ic
+icp deploy portfolio -e ic
 
 # Or redeploy everything at once
-dfx deploy --network ic
+icp deploy -e ic
 ```
 
-### Canister IDs (`canister_ids.json`)
+### Canister IDs
+
+Mainnet IDs are stored in two places for CLI compatibility:
+
+| File | Used by |
+|---|---|
+| `canister_ids.json` | Legacy `dfx` commands |
+| `.icp/data/mappings/.ids.json` | ICP CLI (`icp deploy`, etc.) |
 
 ```json
 {
@@ -140,6 +147,8 @@ dfx deploy --network ic
   }
 }
 ```
+
+Keep both files in sync when deploying new canisters. Commit `.icp/data/` to preserve ICP CLI mappings.
 
 ### Cycles cost reference
 
@@ -156,7 +165,7 @@ dfx deploy --network ic
 Monitor balance:
 
 ```bash
-dfx canister status backend --network ic
+icp canister status backend -e ic
 ```
 
 ---

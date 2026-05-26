@@ -28,8 +28,11 @@ dist-ssr
 .env.dfx.local
 .env.production
 
-# DFX
+# ICP CLI / legacy DFX local artifacts
 .dfx
+.icp/cache/
 
 # Rust build output
 target/
+
+*.pem
