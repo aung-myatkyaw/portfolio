@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { FaGithub, FaLinkedin, FaGitlab } from 'react-icons/fa';
+import { getHomeExperienceTagline } from '../lib/career';
 
 const Home = () => {
   const socialLinks = [
@@ -48,7 +49,7 @@ const Home = () => {
               Senior DevSecOps Engineer
             </p>
             <p className="text-lg text-gray-500 dark:text-gray-400 mb-4">
-              CKS &bull; CKA &bull; AWS SysOps &bull; 5+ Years in Cloud & Security
+              CKS &bull; CKA &bull; AWS SysOps &bull; {getHomeExperienceTagline()}
             </p>
           </motion.div>
         </motion.div>

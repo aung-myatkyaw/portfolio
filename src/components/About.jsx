@@ -1,7 +1,9 @@
 import { motion } from 'framer-motion';
 import { FaGraduationCap, FaAward, FaBrain, FaRocket } from 'react-icons/fa';
+import { getExperiencePlusLabel } from '../lib/career';
 
 const About = () => {
+  const experienceLabel = getExperiencePlusLabel();
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -29,7 +31,7 @@ const About = () => {
     {
       icon: <FaAward className="w-6 h-6" />,
       title: "Certifications",
-      description: "CKS, CKA, and AWS Certified SysOps Administrator with 5+ years of hands-on industry experience across cloud platforms"
+      description: `CKS, CKA, and AWS Certified SysOps Administrator with ${experienceLabel} years of hands-on industry experience across cloud platforms`
     },
     {
       icon: <FaBrain className="w-6 h-6" />,

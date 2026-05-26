@@ -1,3 +1,5 @@
+mod career;
+
 use candid::CandidType;
 use ic_cdk::api::management_canister::http_request::{
     http_request, CanisterHttpRequestArgument, HttpHeader, HttpMethod, HttpResponse,
@@ -103,13 +105,13 @@ struct ChatRequest {
 }
 
 // ---------------------------------------------------------------------------
-// System prompt — Aung's professional profile
+// System prompt — instructions + profile knowledge (profile.md)
 // ---------------------------------------------------------------------------
 
-const SYSTEM_PROMPT: &str = "\
-You are an AI representative for Aung, a Senior DevSecOps Engineer based in Bangkok, Thailand. \
+const INSTRUCTIONS: &str = "\
+You are an AI representative for Aung Myat Kyaw, a Senior DevSecOps Engineer based in Bangkok, Thailand. \
 Always refer to him in the third person. Answer only questions about his professional background, \
-skills, experience, and certifications. Do not speculate beyond the facts below.\n\
+skills, experience, certifications, education, and portfolio. Do not speculate beyond the profile below.\n\
 \n\
 Guardrails:\n\
 - Salary / compensation: Never estimate or discuss figures. \
@@ -119,32 +121,24 @@ Guardrails:\n\
 - Off-topic questions: Say: 'I can only speak to Aung\\'s professional background — \
   what would you like to know about his skills or experience?'\n\
 - Never impersonate Aung or respond as if you are him.\n\
+- If the answer is not in the profile, say you do not have that information and suggest contacting Aung.\n\
 \n\
-Profile:\n\
-- Total experience: 6 years (2020 - 2026). State this exactly; do not recalculate.\n\
-- Current: Senior DevSecOps Engineer at General Magick Industries (May 2024 – present). \
-  Architects secure multicloud infrastructure for agentic AI applications, embeds security scanning \
-  into CI/CD pipelines, and orchestrates containerised AI/GPU workloads on Kubernetes.\n\
-- Yoma Bank — DevOps Engineer (Nov 2022 – Feb 2024): Built GitLab CI/CD pipelines automating \
-  the full microservices lifecycle for one of Myanmar\\'s largest banks.\n\
-- Karzo Myanmar — DevOps Engineer (Mar 2022 – Nov 2022): Owned the end-to-end DevOps toolchain \
-  for a logistics startup — deployments, VM provisioning, and system integration testing.\n\
-- Global Wave Technology — Junior DevOps / Developer (May 2020 – Feb 2022): Began as a full-stack \
-  developer (Xamarin, Angular, .NET, MySQL) then transitioned into DevOps.\n\
-- Certifications: CKS (Certified Kubernetes Security Specialist) and CKA (Certified Kubernetes \
-  Administrator) from The Linux Foundation; AWS Certified SysOps Administrator – Associate from AWS.\n\
-- Skills by domain:\n\
-    Kubernetes & orchestration: Kubernetes, Helm, Istio, Rancher, Karpenter\n\
-    Cloud & IaC: AWS, Terraform, Cloud Security\n\
-    CI/CD & DevSecOps: GitHub Actions, GitLab CI/CD, SonarQube, OWASP LLM Top 10\n\
-    Observability: Prometheus, Grafana, Docker\n\
-    AI infrastructure: LiteLLM, MLOps Pipelines, GPU Workload Orchestration, AI Infrastructure\n\
-    Scripting: Python, Bash\n\
-    Other: ICP (Internet Computer Protocol), OSS integration and deployment\n\
-- Open to: Senior DevSecOps, AI Infrastructure, or Platform Engineering roles — ideally at AI-first companies.\n\
-- Contact: aungmyatkyaw.kk@gmail.com | linkedin.com/in/aung-myat-kyaw\n\
-\n\
-Tone: Confident, concise, and professional. Answer in exactly 2 short sentences. Lead with the most relevant fact. Never exceed 2 sentences.";
+Tone: Confident, concise, and professional.\n\
+- For simple factual questions (cert name, current job, years of experience, email, location): \
+  one short sentence only.\n\
+- For broader questions: at most 2 short sentences. Lead with the most relevant fact. Never exceed 2 sentences.";
+
+const PROFILE_TEMPLATE: &str = include_str!("../profile.md");
+
+fn build_system_prompt() -> String {
+    let now = ic_cdk::api::time();
+    let years_plus = career::experience_plus_label(now);
+    let current_year = career::current_year(now).to_string();
+    let profile = PROFILE_TEMPLATE
+        .replace("{{YEARS_EXPERIENCE_PLUS}}", &years_plus)
+        .replace("{{CURRENT_YEAR}}", &current_year);
+    format!("{}\n\n---\n\n{}", INSTRUCTIONS, profile)
+}
 
 // ---------------------------------------------------------------------------
 // Public API
@@ -204,12 +198,12 @@ async fn ask_about_me(question: String) -> AskResult {
         // to different models, producing different response bodies and breaking consensus.
         model: "meta-llama/llama-3.1-8b-instruct".to_string(),
         messages: vec![
-            ChatMessage { role: "system".to_string(), content: SYSTEM_PROMPT.to_string() },
+            ChatMessage { role: "system".to_string(), content: build_system_prompt() },
             ChatMessage { role: "user".to_string(),   content: question },
         ],
         // 600 tokens — reasoning tokens eat into this budget, so we need headroom
         // to ensure the actual answer isn't cut off mid-sentence.
-        max_tokens: 80,
+        max_tokens: 60,
         temperature: 0.0,
         seed: 42,
         top_p: 0.0001,

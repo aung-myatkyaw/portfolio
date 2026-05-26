@@ -44,17 +44,19 @@ const getActor = async () => {
 // Constants
 // ---------------------------------------------------------------------------
 
+// Short, factual prompts — simpler questions tend to produce shorter, more
+// deterministic answers (helps ICP subnet consensus on HTTPS outcalls).
 const SUGGESTED_QUESTIONS = [
-  'How do you secure AI/ML pipelines in production?',
-  'What are your Kubernetes certifications?',
-  'What experience do you have with GPU workload orchestration?',
-  'How have you implemented DevSecOps at an AI company?',
+  'What are his Kubernetes certifications?',
+  'Where does he work now?',
+  'How many years of experience?',
+  'What is his email?',
 ];
 
 const WELCOME_MESSAGE = {
   role: 'assistant',
   content:
-    "Hi! I'm an AI trained on Aung's professional profile. Ask me about his experience, skills, certifications, or how he might fit your team.",
+    "Hi! Ask one question at a time about Aung's experience, skills, or certifications. Each answer is independent — I don't remember earlier messages in this chat.",
 };
 
 // ---------------------------------------------------------------------------
@@ -340,7 +342,7 @@ const AskMe = () => {
             </p>
             <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1 flex-shrink-0">
               <FiShield className="w-3 h-3 text-green-500 dark:text-green-400" />
-              No conversations are stored or logged
+              No memory between messages · nothing stored on-chain
             </p>
           </motion.div>
         </>
