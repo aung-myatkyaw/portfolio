@@ -155,10 +155,11 @@ Keep both files in sync when deploying new canisters. Commit `.icp/data/` to pre
 | Operation | Cost |
 |---|---|
 | Canister creation (one-time, deducted from initial balance) | 0.5 TC |
-| `ask_about_me` HTTPS outcall (base + 3KB request + 24KB response) | ~331M cycles |
+| `ask_about_me` HTTPS outcall (non-replicated, ~3KB request + 8KB max response) | ~30M cycles |
+| `ask_about_me` cache hit (repeat question) | 0 (no outcall) |
 | Frontend redeploy (Wasm install) | ~0.01–0.05 TC |
 | Idle storage (1.7MB Rust canister) | ~24M cycles/day |
-| **Recommended initial backend balance** | **1 TC** (leaves ~0.5 TC after creation fee → ~1,500 questions) |
+| **Recommended initial backend balance** | **1 TC** (leaves ~0.5 TC after creation fee → ~15,000+ questions) |
 
 > 1 TC = 1 trillion cycles ≈ $1.35 USD. See [ICP cycles cost formulas](https://docs.internetcomputer.org/references/cycles-cost-formulas#cycles-price-breakdown) for exact calculations.
 
@@ -176,8 +177,8 @@ icp canister status backend -e ic
 Browser (React)
   └── @dfinity/agent
         └── ICP backend canister (Rust) — 2h2bb-wiaaa-aaaal-qwnna-cai
-              └── HTTPS outcall → openrouter.ai/api/v1/chat/completions
-                    └── openrouter/auto (free model, auto-routed)
+              └── non-replicated HTTPS outcall → openrouter.ai/api/v1/chat/completions
+                    └── meta-llama/llama-3.1-8b-instruct
 ```
 
 ### Security measures on the backend canister
@@ -189,8 +190,9 @@ Browser (React)
 | Prompt injection guard | 22-pattern blocklist checked before OpenRouter call |
 | API key protection | `set_api_key` restricted to canister controllers only |
 | Stable memory persistence | API key survives canister upgrades via `pre_upgrade`/`post_upgrade` hooks |
-| Reasoning disabled | `reasoning: { effort: "minimal" }` to reduce latency and response size |
-| Response size cap | `max_response_bytes: 24KB` to limit per-call cycle cost |
+| Non-replicated outcalls | `is_replicated: false` — one subnet node calls OpenRouter (no 13× fan-out or consensus transform) |
+| Response cache | LRU cache (64 entries) — repeat questions skip the outcall entirely |
+| Response size cap | `max_response_bytes: 8KB` — cycles billed on cap, not actual size |
 
 ### System prompt guardrails
 

@@ -1,10 +1,7 @@
 mod career;
 
-use candid::CandidType;
-use ic_cdk::api::management_canister::http_request::{
-    http_request, CanisterHttpRequestArgument, HttpHeader, HttpMethod, HttpResponse,
-    TransformArgs, TransformContext,
-};
+use candid::{CandidType, Nat};
+use ic_cdk_management_canister::{http_request, HttpHeader, HttpMethod, HttpRequestArgs};
 use serde::{Deserialize, Serialize};
 use std::cell::RefCell;
 
@@ -17,15 +14,21 @@ use std::cell::RefCell;
 // anonymous principal, so per-caller limiting isn't meaningful here.
 const RATE_LIMIT_WINDOW_NS: u64 = 300_000_000_000; // 5 minutes in nanoseconds
 const RATE_LIMIT_MAX_CALLS: u32 = 30;
+const CACHE_MAX: usize = 64;
+const OPENROUTER_URL: &str = "https://openrouter.ai/api/v1/chat/completions";
+const LLM_MODEL: &str = "meta-llama/llama-3.1-8b-instruct";
+// Billing uses max_response_bytes, not actual size — keep tight for short answers.
+const MAX_RESPONSE_BYTES: u64 = 8_192;
 
 thread_local! {
     static API_KEY: RefCell<String> = RefCell::new(String::new());
     static RATE_WINDOW_START: RefCell<u64> = RefCell::new(0);
     static RATE_CALL_COUNT: RefCell<u32> = RefCell::new(0);
+    static RESPONSE_CACHE: RefCell<Vec<(String, String)>> = RefCell::new(Vec::new());
 }
 
 // Persist API key across canister upgrades via stable memory.
-// Rate limiter state is intentionally not saved — it resets on upgrade which is fine.
+// Rate limiter and response cache reset on upgrade, which is fine.
 #[ic_cdk::pre_upgrade]
 fn pre_upgrade() {
     let key = API_KEY.with(|k| k.borrow().clone());
@@ -84,10 +87,8 @@ struct ChatMessage {
 
 #[derive(Serialize)]
 struct Provider {
-    // Pin to a single inference provider so all 13 ICP subnet nodes hit the same
-    // backend and get byte-identical responses at temperature=0 for consensus.
-    only: Vec<String>,
     allow_fallbacks: bool,
+    require_parameters: bool,
 }
 
 #[derive(Serialize)]
@@ -96,10 +97,7 @@ struct ChatRequest {
     messages: Vec<ChatMessage>,
     max_tokens: u32,
     temperature: f32,
-    // seed + temperature=0 + top_p≈0 = greedy decoding, maximising cross-GPU determinism.
-    // All 13 ICP subnet nodes independently call the model and must agree on the response.
-    // Shorter outputs have fewer token-branch divergence points → higher consensus rate.
-    seed: u32,
+    seed: i32,
     top_p: f32,
     provider: Provider,
 }
@@ -145,7 +143,6 @@ fn build_system_prompt() -> String {
 // ---------------------------------------------------------------------------
 
 /// Ask a question about Aung's professional profile.
-/// Uses openrouter/auto — OpenRouter picks whichever free model is available.
 #[ic_cdk::update]
 async fn ask_about_me(question: String) -> AskResult {
     let api_key = API_KEY.with(|k| k.borrow().clone());
@@ -191,25 +188,32 @@ async fn ask_about_me(question: String) -> AskResult {
         return AskResult::Err("Your message was flagged as a potential prompt injection attempt.".to_string());
     }
 
+    let cache_key = q_lower.clone();
+    if let Some(cached) = cache_get(&cache_key) {
+        return AskResult::Ok(cached);
+    }
+
+    let seed = stable_hash_i32(&question);
     let body = ChatRequest {
-        // Pinned to a specific model — ICP HTTPS outcalls require all 13 subnet nodes
-        // to independently call OpenRouter and reach consensus on the response.
-        // Using openrouter/auto or openrouter/free risks different nodes getting routed
-        // to different models, producing different response bodies and breaking consensus.
-        model: "meta-llama/llama-3.1-8b-instruct".to_string(),
+        model: LLM_MODEL.to_string(),
         messages: vec![
-            ChatMessage { role: "system".to_string(), content: build_system_prompt() },
-            ChatMessage { role: "user".to_string(),   content: question },
+            ChatMessage {
+                role: "system".to_string(),
+                content: build_system_prompt(),
+            },
+            ChatMessage {
+                role: "user".to_string(),
+                content: question,
+            },
         ],
-        // 600 tokens — reasoning tokens eat into this budget, so we need headroom
-        // to ensure the actual answer isn't cut off mid-sentence.
-        max_tokens: 60,
+        // 120 tokens — enough for two full sentences; 60 was truncating broader answers mid-word.
+        max_tokens: 120,
         temperature: 0.0,
-        seed: 42,
+        seed,
         top_p: 0.0001,
         provider: Provider {
-            only: vec!["deepinfra/bf16".to_string()],
             allow_fallbacks: false,
+            require_parameters: true,
         },
     };
 
@@ -218,86 +222,110 @@ async fn ask_about_me(question: String) -> AskResult {
         Err(e) => return AskResult::Err(format!("Serialization error: {}", e)),
     };
 
-    let request = CanisterHttpRequestArgument {
-        url: "https://openrouter.ai/api/v1/chat/completions".to_string(),
-        method: HttpMethod::POST,
-        headers: vec![
-            HttpHeader {
-                name: "Authorization".to_string(),
-                value: format!("Bearer {}", api_key),
-            },
-            HttpHeader {
-                name: "Content-Type".to_string(),
-                value: "application/json".to_string(),
-            },
-            HttpHeader {
-                name: "HTTP-Referer".to_string(),
-                value: "https://aungmyatkyaw.cv".to_string(),
-            },
-        ],
-        body: Some(body_bytes),
-        transform: Some(TransformContext::from_name(
-            "transform_response".to_string(),
-            vec![],
-        )),
-        // 8KB — sufficient for LLaMA 3.1 8B responses (observed: ~200 bytes / 34 tokens).
-        // Reducing from 24KB saves ~166M ICP cycles per call (10,400 cycles/byte × 16KB).
-        max_response_bytes: Some(8_192),
-    };
+    let headers = vec![
+        HttpHeader {
+            name: "Authorization".to_string(),
+            value: format!("Bearer {}", api_key),
+        },
+        HttpHeader {
+            name: "Content-Type".to_string(),
+            value: "application/json".to_string(),
+        },
+        HttpHeader {
+            name: "HTTP-Referer".to_string(),
+            value: "https://aungmyatkyaw.cv".to_string(),
+        },
+    ];
 
-    // Actual cost breakdown (13-node subnet):
-    //   base_fee = 49M | request_bytes ~16M | response_bytes (24KB) ~256M | overhead ~10M ≈ 331M
-    //   500M attached gives ~169M buffer. See: https://docs.internetcomputer.org/references/cycles-cost-formulas
-    match http_request(request, 500_000_000).await {
-        Ok((response,)) => parse_openrouter_response(response.body),
-        Err((_, msg)) => AskResult::Err(format!("HTTP outcall failed: {}", msg)),
+    match http_post_json(OPENROUTER_URL.to_string(), headers, body_bytes, MAX_RESPONSE_BYTES).await {
+        Ok(response_body) => match parse_openrouter_response(response_body) {
+            AskResult::Ok(answer) => {
+                cache_put(cache_key, answer.clone());
+                AskResult::Ok(answer)
+            }
+            err => err,
+        },
+        Err(msg) => AskResult::Err(msg),
     }
 }
 
 /// Set the OpenRouter API key. Only callable by the canister controller.
 #[ic_cdk::update]
 fn set_api_key(key: String) {
-    let caller = ic_cdk::caller();
+    let caller = ic_cdk::api::msg_caller();
     if !ic_cdk::api::is_controller(&caller) {
         ic_cdk::trap("Unauthorized: only controllers can set the API key");
     }
     API_KEY.with(|k| *k.borrow_mut() = key);
 }
 
-/// Normalize the OpenRouter response so all 13 subnet nodes produce byte-identical output.
-///
-/// Two sources of non-determinism must be stripped:
-///   1. HTTP headers (Date, X-Request-Id, CF-Ray, etc.) — vary per node's request
-///   2. Response body fields (id, created, system_fingerprint) — unique per API call
-///
-/// We rebuild the body keeping only the fields needed for consensus:
-/// choices[].message.content and error. Everything else is discarded.
-#[ic_cdk::query]
-fn transform_response(args: TransformArgs) -> HttpResponse {
-    let body = match String::from_utf8(args.response.body) {
-        Ok(body_str) => match serde_json::from_str::<serde_json::Value>(&body_str) {
-            Ok(json) => {
-                let clean = serde_json::json!({
-                    "choices": json["choices"],
-                    "error": json["error"]
-                });
-                clean.to_string().into_bytes()
-            }
-            Err(_) => body_str.into_bytes(),
-        },
-        Err(e) => e.into_bytes(),
-    };
-
-    HttpResponse {
-        status: args.response.status,
-        body,
-        headers: vec![],
-    }
-}
-
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
+
+async fn http_post_json(
+    url: String,
+    headers: Vec<HttpHeader>,
+    body: Vec<u8>,
+    max_response_bytes: u64,
+) -> Result<Vec<u8>, String> {
+    let request = HttpRequestArgs {
+        url,
+        max_response_bytes: Some(max_response_bytes),
+        method: HttpMethod::POST,
+        headers,
+        body: Some(body),
+        transform: None,
+        is_replicated: Some(false),
+    };
+
+    let response = http_request(&request)
+        .await
+        .map_err(|e| format!("HTTP outcall failed: {:?}", e))?;
+
+    if response.status == Nat::from(429u32) {
+        return Err("Rate limited by AI provider. Please try again shortly.".to_string());
+    }
+    if response.status > Nat::from(399u32) {
+        return Err(format!("Upstream HTTP {}", response.status));
+    }
+
+    Ok(response.body)
+}
+
+/// Stable 32-bit seed derived from the question for reproducible LLM output.
+fn stable_hash_i32(text: &str) -> i32 {
+    let mut hash: u32 = 0x811c9dc5;
+    for byte in text.bytes() {
+        hash ^= u32::from(byte);
+        hash = hash.wrapping_mul(0x01000193);
+    }
+    (hash & 0x7fffffff) as i32
+}
+
+fn cache_get(key: &str) -> Option<String> {
+    RESPONSE_CACHE.with(|cache| {
+        cache
+            .borrow()
+            .iter()
+            .find(|(k, _)| k == key)
+            .map(|(_, v)| v.clone())
+    })
+}
+
+fn cache_put(key: String, value: String) {
+    RESPONSE_CACHE.with(|cache| {
+        let mut entries = cache.borrow_mut();
+        if let Some(pos) = entries.iter().position(|(k, _)| k == &key) {
+            entries[pos] = (key, value);
+            return;
+        }
+        if entries.len() >= CACHE_MAX {
+            entries.remove(0);
+        }
+        entries.push((key, value));
+    });
+}
 
 fn parse_openrouter_response(body: Vec<u8>) -> AskResult {
     let body_str = match String::from_utf8(body) {
@@ -318,7 +346,10 @@ fn parse_openrouter_response(body: Vec<u8>) -> AskResult {
         return AskResult::Err(err_msg.to_string());
     }
 
-    AskResult::Err(format!("Unexpected response: {}", &body_str[..body_str.len().min(200)]))
+    AskResult::Err(format!(
+        "Unexpected response: {}",
+        &body_str[..body_str.len().min(200)]
+    ))
 }
 
 // Auto-generate the Candid interface from annotated functions

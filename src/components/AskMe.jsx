@@ -151,13 +151,17 @@ const AskMe = () => {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const messagesEndRef = useRef(null);
+  const chatContainerRef = useRef(null);
   const inputRef = useRef(null);
 
   const isConfigured = Boolean(BACKEND_CANISTER_ID);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    const container = chatContainerRef.current;
+    if (!container) return;
+    // Scroll inside the chat panel only — scrollIntoView() also moves the page,
+    // which jumps down to the contact form below this section.
+    container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
   }, [messages, isLoading]);
 
   const sendMessage = async (question) => {
@@ -250,6 +254,7 @@ const AskMe = () => {
         <>
           {/* Chat window */}
           <motion.div
+            ref={chatContainerRef}
             variants={itemVariants}
             className="card p-4 mb-3 h-72 overflow-y-auto flex flex-col gap-4 scroll-smooth"
           >
@@ -259,7 +264,6 @@ const AskMe = () => {
               ))}
               {isLoading && <TypingIndicator key="typing" />}
             </AnimatePresence>
-            <div ref={messagesEndRef} />
           </motion.div>
 
           {/* Error */}
