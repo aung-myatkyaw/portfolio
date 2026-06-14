@@ -253,4 +253,4 @@ curl -sL -X GET https://icp0.io/custom-domains/v1/www.aungmyatkyaw.cv | jq
 | `connect-src` | `'self'`, `https://api.emailjs.com`, `https://icp-api.io`, `https://openrouter.ai`, `http://localhost:4943` |
 | `style-src` | `'self'`, `'unsafe-inline'` |
 | `img-src` | `'self'`, `data:` |
-| `font-src` | `'self'`, `data:` |
+| `font-src` | `'self'`, `data:` (JetBrains Mono bundled via `@fontsource/jetbrains-mono`) |

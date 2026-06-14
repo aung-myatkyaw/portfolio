@@ -8,6 +8,8 @@ import LoadingSpinner from './components/LoadingSpinner';
 import PageTransition from './components/PageTransition';
 import ScrollProgress from './components/ScrollProgress';
 import BackButton from './components/BackButton';
+import { AskMeProvider } from './context/AskMeContext';
+import AskMeDock from './components/askme/AskMeDock';
 
 // Lazy load components
 const Home = lazy(() => import('./components/Home'));
@@ -66,17 +68,20 @@ function AnimatedRoutes() {
 function App() {
   return (
     <Router>
+      <AskMeProvider>
         <div className="min-h-screen bg-gray-100 dark:bg-slate-950 transition-colors duration-200 flex flex-col">
-        <ScrollProgress />
-        <Navbar />
-        <main className="flex-grow relative">
-          <Suspense fallback={<LoadingSpinner />}>
-            <AnimatedRoutes />
-          </Suspense>
-        </main>
-        <Footer />
-        <ScrollToTop />
-      </div>
+          <ScrollProgress />
+          <Navbar />
+          <main className="flex-grow relative">
+            <Suspense fallback={<LoadingSpinner />}>
+              <AnimatedRoutes />
+            </Suspense>
+          </main>
+          <Footer />
+          <ScrollToTop />
+          <AskMeDock />
+        </div>
+      </AskMeProvider>
     </Router>
   );
 }

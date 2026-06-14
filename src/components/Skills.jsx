@@ -1,217 +1,258 @@
 import { motion } from 'framer-motion';
+import PropTypes from 'prop-types';
 import { useInView } from 'react-intersection-observer';
+import {
+  FiCloud,
+  FiGitBranch,
+  FiShield,
+  FiCpu,
+  FiCode,
+  FiMonitor,
+} from 'react-icons/fi';
+
+const levelToProficiency = (level) => {
+  if (level >= 5) return { label: 'Expert', className: 'proficiency-expert' };
+  if (level >= 4) return { label: 'Advanced', className: 'proficiency-advanced' };
+  return { label: 'Working', className: 'proficiency-working' };
+};
+
+const skillCategories = [
+  {
+    id: 'cloud',
+    title: 'Cloud & Infrastructure',
+    icon: FiCloud,
+    span: 'lg:col-span-2',
+    description: 'Multicloud IaC, Kubernetes orchestration, and container platforms for AI workloads.',
+    skills: [
+      { name: 'Kubernetes', level: 5, hint: 'Production clusters, RBAC, GPU scheduling' },
+      { name: 'AWS', level: 5, hint: 'EKS, IAM, SysOps-certified ops' },
+      { name: 'GCP', level: 4, hint: 'GKE, Cloud Skills Boost' },
+      { name: 'Azure', level: 4, hint: 'AKS, Azure DevOps pipelines' },
+      { name: 'Docker', level: 5, hint: 'Containerized microservices & AI apps' },
+      { name: 'Terraform', level: 4, hint: 'Multicloud IaC at General Magic' },
+      { name: 'Rancher', level: 4, hint: 'Multi-cluster management' },
+    ],
+  },
+  {
+    id: 'cicd',
+    title: 'DevOps & CI/CD',
+    icon: FiGitBranch,
+    span: 'lg:col-span-2',
+    description: 'Automated pipelines with embedded security gates.',
+    pipeline: ['commit', 'build', 'scan', 'deploy', 'monitor'],
+    skills: [
+      { name: 'GitLab CI/CD', level: 5, hint: 'Banking microservices lifecycle' },
+      { name: 'GitHub Actions', level: 5, hint: 'Security scanning in CI at General Magic' },
+      { name: 'Jenkins', level: 4 },
+      { name: 'Helm / ArgoCD', level: 4 },
+    ],
+  },
+  {
+    id: 'security',
+    title: 'Security & Monitoring',
+    icon: FiShield,
+    description: 'DevSecOps practices, mesh, and observability.',
+    skills: [
+      { name: 'DevSecOps', level: 5, hint: 'Security-first automation' },
+      { name: 'Istio / Service Mesh', level: 4 },
+      { name: 'Prometheus & Grafana', level: 4 },
+      { name: 'Vulnerability Scanning', level: 4 },
+      { name: 'IAM & Network Security', level: 4 },
+    ],
+  },
+  {
+    id: 'ai',
+    title: 'AI & ML Infrastructure',
+    icon: FiCpu,
+    description: 'Serving AI workloads safely on Kubernetes.',
+    skills: [
+      { name: 'AI App Deployment (K8s)', level: 4 },
+      { name: 'GPU Workload Orchestration', level: 3 },
+      { name: 'LLM Serving & Inference', level: 3 },
+      { name: 'MLOps Pipelines', level: 3 },
+      { name: 'AI Security (OWASP LLM)', level: 3 },
+    ],
+  },
+  {
+    id: 'programming',
+    title: 'Programming & Scripting',
+    icon: FiCode,
+    description: 'Automation scripts and tooling for infrastructure workflows.',
+    skills: [
+      { name: 'Shell Scripting', level: 4 },
+      { name: 'Python', level: 4 },
+      { name: 'TypeScript / Node.js', level: 3 },
+      { name: 'C# / .NET', level: 3 },
+    ],
+  },
+  {
+    id: 'sysadmin',
+    title: 'System Administration',
+    icon: FiMonitor,
+    description: 'Linux ops, networking, and incident response.',
+    skills: [
+      { name: 'Linux/Unix', level: 5 },
+      { name: 'Incident Response', level: 4 },
+      { name: 'Network Engineering', level: 4 },
+      { name: 'Threat Assessment', level: 4 },
+    ],
+  },
+];
+
+const SkillRow = ({ skill }) => {
+  const prof = levelToProficiency(skill.level);
+  return (
+    <li
+      className="flex items-center justify-between gap-3 py-2 border-b border-slate-200/70 dark:border-slate-700/45 last:border-b-0"
+      title={skill.hint || undefined}
+    >
+      <span className="text-sm text-gray-700 dark:text-gray-300">{skill.name}</span>
+      <span className={`${prof.className} flex-shrink-0`}>{prof.label}</span>
+    </li>
+  );
+};
+
+SkillRow.propTypes = {
+  skill: PropTypes.shape({
+    name: PropTypes.string.isRequired,
+    level: PropTypes.number.isRequired,
+    hint: PropTypes.string,
+  }).isRequired,
+};
+
+const MiniPipeline = ({ stages }) => (
+  <div className="flex items-center gap-1 py-2 mb-1 overflow-x-auto">
+    {stages.map((stage, i) => (
+      <div key={stage} className="flex items-center flex-shrink-0">
+        <div className={`pipeline-node ${i <= 3 ? 'pipeline-node-active' : ''}`}>
+          {stage[0].toUpperCase()}
+        </div>
+        {i < stages.length - 1 && <div className="pipeline-connector" />}
+      </div>
+    ))}
+  </div>
+);
+
+MiniPipeline.propTypes = {
+  stages: PropTypes.arrayOf(PropTypes.string).isRequired,
+};
+
+const BentoTile = ({ category, variants }) => {
+  const Icon = category.icon;
+
+  return (
+    <motion.div
+      className={`bento-tile h-full self-stretch ${category.span || ''}`}
+      variants={variants}
+      whileHover={{ scale: 1.005 }}
+    >
+      <div className="flex items-start gap-3 mb-3">
+        <div className="p-2 rounded-lg bg-primary-500/10 text-primary-600 dark:text-primary-400 flex-shrink-0">
+          <Icon className="w-5 h-5" />
+        </div>
+        <div className="min-w-0">
+          <h3 className="text-base font-semibold text-gray-800 dark:text-white leading-snug">
+            {category.title}
+          </h3>
+          {category.description && (
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 leading-relaxed">
+              {category.description}
+            </p>
+          )}
+        </div>
+      </div>
+
+      {category.pipeline && <MiniPipeline stages={category.pipeline} />}
+
+      <ul>
+        {category.skills.map((skill) => (
+          <SkillRow key={skill.name} skill={skill} />
+        ))}
+      </ul>
+    </motion.div>
+  );
+};
+
+BentoTile.propTypes = {
+  category: PropTypes.shape({
+    title: PropTypes.string.isRequired,
+    icon: PropTypes.elementType.isRequired,
+    span: PropTypes.string,
+    description: PropTypes.string,
+    pipeline: PropTypes.arrayOf(PropTypes.string),
+    skills: PropTypes.array.isRequired,
+  }).isRequired,
+  variants: PropTypes.object,
+};
 
 const Skills = () => {
-  const [ref, inView] = useInView({
-    threshold: 0.1,
-    triggerOnce: true
-  });
-
-  const skillCategories = [
-    {
-      title: "Cloud & Infrastructure",
-      icon: "☁️",
-      skills: [
-        { name: "Kubernetes", level: 5 },
-        { name: "AWS", level: 5 },
-        { name: "Google Cloud Platform (GCP)", level: 4 },
-        { name: "Microsoft Azure", level: 4 },
-        { name: "Docker", level: 5 },
-        { name: "Terraform", level: 4 },
-        { name: "Rancher", level: 4 }
-      ]
-    },
-    {
-      title: "DevOps & CI/CD",
-      icon: "🔄",
-      skills: [
-        { name: "GitLab CI/CD", level: 5 },
-        { name: "GitHub Actions", level: 5 },
-        { name: "Jenkins", level: 4 },
-        { name: "Azure DevOps", level: 4 },
-        { name: "Helm Charts", level: 4 },
-        { name: "ArgoCD", level: 4 }
-      ]
-    },
-    {
-      title: "Security & Monitoring",
-      icon: "🔒",
-      skills: [
-        { name: "DevSecOps", level: 5 },
-        { name: "Istio / Service Mesh", level: 4 },
-        { name: "Prometheus & Grafana", level: 4 },
-        { name: "Vulnerability Scanning", level: 4 },
-        { name: "IAM & Network Security", level: 4 },
-        { name: "Cloudflare / API Gateways", level: 4 }
-      ]
-    },
-    {
-      title: "AI & ML Infrastructure",
-      icon: "🤖",
-      skills: [
-        { name: "AI App Deployment (K8s)", level: 4 },
-        { name: "GPU Workload Orchestration", level: 3 },
-        { name: "LLM Serving & Inference", level: 3 },
-        { name: "MLOps Pipelines", level: 3 },
-        { name: "AI Security (OWASP LLM)", level: 3 },
-        { name: "Vector DB Infrastructure", level: 3 }
-      ]
-    },
-    {
-      title: "Programming & Scripting",
-      icon: "💻",
-      skills: [
-        { name: "Shell Scripting", level: 4 },
-        { name: "Python", level: 4 },
-        { name: "Node.js", level: 3 },
-        { name: "C#/.NET", level: 3 },
-        { name: "Java", level: 3 },
-        { name: "TypeScript / Angular", level: 3 }
-      ]
-    },
-    {
-      title: "System Administration",
-      icon: "🖥️",
-      skills: [
-        { name: "Linux/Unix", level: 5 },
-        { name: "Incident Response", level: 4 },
-        { name: "Network Engineering", level: 4 },
-        { name: "System Optimization", level: 4 },
-        { name: "Threat Assessment", level: 4 }
-      ]
-    }
-  ];
-
-  const renderSkillLevel = (level) => {
-    return (
-      <div className="flex space-x-1">
-        {[...Array(5)].map((_, index) => (
-          <motion.div
-            key={index}
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ delay: index * 0.1 }}
-            className={`w-3 h-3 rounded-full ${
-              index < level 
-                ? 'bg-primary-500 dark:bg-primary-400' 
-                : 'bg-gray-200 dark:bg-gray-600'
-            }`}
-          />
-        ))}
-      </div>
-    );
-  };
+  const [ref, inView] = useInView({ threshold: 0.1, triggerOnce: true });
 
   const containerVariants = {
     hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.2
-      }
-    }
+    visible: { opacity: 1, transition: { staggerChildren: 0.06, delayChildren: 0.1 } },
   };
 
   const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        duration: 0.5
-      }
-    }
+    hidden: { y: 12, opacity: 0 },
+    visible: { y: 0, opacity: 1, transition: { duration: 0.35 } },
   };
 
   return (
-    <motion.div 
+    <motion.div
       ref={ref}
-      className="container mx-auto px-4 py-16"
+      className="container mx-auto px-4 py-16 max-w-6xl"
       initial="hidden"
-      animate={inView ? "visible" : "hidden"}
+      animate={inView ? 'visible' : 'hidden'}
       variants={containerVariants}
     >
-      <motion.h2 
-        variants={itemVariants}
-        className="text-3xl font-bold text-center text-gray-800 dark:text-white mb-12"
-      >
-        Professional Skills
-      </motion.h2>
-
-      <motion.div 
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-        variants={containerVariants}
-      >
-        {skillCategories.map((category) => (
-          <motion.div 
-            key={category.title} 
-            className="card p-6"
-            variants={itemVariants}
-            whileHover={{ scale: 1.02 }}
-          >
-            <div className="flex items-center mb-6">
-              <span className="text-2xl mr-3">{category.icon}</span>
-              <h3 className="text-xl font-semibold text-gray-800 dark:text-white">
-                {category.title}
-              </h3>
-            </div>
-            <ul className="space-y-4">
-              {category.skills.map((skill) => (
-                <motion.li 
-                  key={skill.name} 
-                  className="group"
-                  whileHover={{ x: 5 }}
-                >
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-600 dark:text-gray-300 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
-                      {skill.name}
-                    </span>
-                    {renderSkillLevel(skill.level)}
-                  </div>
-                  <motion.div 
-                    className="h-[2px] bg-primary-500/20 mt-2"
-                    initial={{ scaleX: 0 }}
-                    whileInView={{ scaleX: skill.level / 5 }}
-                    transition={{ duration: 1, ease: "easeOut" }}
-                  />
-                </motion.li>
-              ))}
-            </ul>
-          </motion.div>
-        ))}
+      <motion.div variants={itemVariants} className="text-center mb-10">
+        <h2 className="section-title mb-2">Capability Matrix</h2>
+        <p className="text-gray-500 dark:text-gray-400 font-mono text-sm">
+          {'// proficiency across the DevSecOps stack'}
+        </p>
       </motion.div>
-      
-      <motion.div 
-        variants={itemVariants}
-        className="mt-12"
-      >
-        <h3 className="text-xl font-semibold mb-6 text-center text-gray-800 dark:text-white">
+
+      <div className="space-y-4">
+        <motion.div
+          className="grid grid-cols-1 md:grid-cols-2 gap-4 items-stretch"
+          variants={containerVariants}
+        >
+          {skillCategories.slice(0, 2).map((cat) => (
+            <BentoTile key={cat.id} category={cat} variants={itemVariants} />
+          ))}
+        </motion.div>
+
+        <motion.div
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-stretch"
+          variants={containerVariants}
+        >
+          {skillCategories.slice(2).map((cat) => (
+            <BentoTile key={cat.id} category={cat} variants={itemVariants} />
+          ))}
+        </motion.div>
+      </div>
+
+      <motion.div variants={itemVariants} className="mt-10">
+        <h3 className="text-lg font-semibold mb-4 text-center text-gray-800 dark:text-white">
           Languages
         </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto">
-          <motion.div 
-            className="card p-6"
-            whileHover={{ scale: 1.05 }}
-          >
-            <div className="flex justify-between items-center">
-              <span className="text-gray-600 dark:text-gray-300">Burmese</span>
-              <span className="text-primary-600 dark:text-primary-400 font-semibold">Native</span>
-            </div>
-          </motion.div>
-          <motion.div 
-            className="card p-6"
-            whileHover={{ scale: 1.05 }}
-          >
-            <div className="flex justify-between items-center">
-              <span className="text-gray-600 dark:text-gray-300">English</span>
-              <span className="text-primary-600 dark:text-primary-400 font-semibold">C2-Proficient (CEFR)</span>
-            </div>
-          </motion.div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-xl mx-auto">
+          {[
+            { name: 'Burmese', level: 'Native' },
+            { name: 'English', level: 'C2 Proficient (CEFR)' },
+          ].map((lang) => (
+            <motion.div key={lang.name} className="bento-tile" whileHover={{ scale: 1.01 }}>
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-sm text-gray-600 dark:text-gray-300">{lang.name}</span>
+                <span className="proficiency-expert">{lang.level}</span>
+              </div>
+            </motion.div>
+          ))}
         </div>
       </motion.div>
     </motion.div>
   );
 };
 
-export default Skills; 
+export default Skills;

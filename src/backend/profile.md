@@ -31,7 +31,7 @@
 
 ## Work Experience
 
-### Senior DevSecOps Engineer — General Magick Industries (May 2024 – Present)
+### Senior DevSecOps Engineer — General Magic (Thailand) Co., Ltd. (May 2024 – Present)
 
 Architecting secure multicloud infrastructure for scalable AI and agentic AI applications. Automated CI/CD pipelines with embedded security scanning, deployed containerized AI workloads on Kubernetes, and drove adoption of security-first practices across the engineering org.
 

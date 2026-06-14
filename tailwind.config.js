@@ -7,6 +7,9 @@ export default {
   darkMode: 'class',
   theme: {
     extend: {
+      fontFamily: {
+        mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'monospace'],
+      },
       colors: {
         primary: {
           50: '#ecfeff',
@@ -32,10 +35,17 @@ export default {
           800: '#065f46',
           900: '#064e3b',
         },
+        status: {
+          healthy: '#34d399',
+          warn: '#fbbf24',
+          muted: '#94a3b8',
+        },
       },
       animation: {
         'gradient': 'gradient 8s linear infinite',
         'float': 'float 3s ease-in-out infinite',
+        'pulse-dot': 'pulse-dot 2s ease-in-out infinite',
+        'blink-cursor': 'blink-cursor 1s step-end infinite',
       },
       keyframes: {
         gradient: {
@@ -52,6 +62,14 @@ export default {
           '0%, 100%': { transform: 'translateY(0)' },
           '50%': { transform: 'translateY(-10px)' },
         },
+        'pulse-dot': {
+          '0%, 100%': { opacity: '1' },
+          '50%': { opacity: '0.4' },
+        },
+        'blink-cursor': {
+          '0%, 100%': { opacity: '1' },
+          '50%': { opacity: '0' },
+        },
       },
     },
   },
@@ -59,4 +77,3 @@ export default {
     require('@tailwindcss/typography'),
   ],
 }
-
