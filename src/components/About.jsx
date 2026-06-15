@@ -31,7 +31,7 @@ const highlights = [
     title: 'Expertise',
     tag: 'ai',
     description:
-      'Sole platform engineer for multi-product EKS and IaC estate — AI gateway, Frappe ERPNext/HRMS, service mesh, and observability for AI-native workloads',
+      'Delivers multi-product platforms through CI/CD and IaC — infrastructure, pipelines, and release automation across many application stacks',
   },
   {
     icon: FiShield,

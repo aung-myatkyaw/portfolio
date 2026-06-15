@@ -10,115 +10,122 @@ import {
   FiMonitor,
 } from 'react-icons/fi';
 
-const levelToProficiency = (level) => {
-  if (level >= 5) return { label: 'Expert', className: 'proficiency-expert' };
-  if (level >= 4) return { label: 'Advanced', className: 'proficiency-advanced' };
-  return { label: 'Working', className: 'proficiency-working' };
-};
-
 const skillCategories = [
   {
     id: 'cloud',
     title: 'Cloud & Infrastructure',
     icon: FiCloud,
-    span: 'lg:col-span-2',
+    chipClass: 'skill-chip-cloud',
     description: 'Multicloud IaC, EKS platform engineering, API Gateway, and Frappe ERPNext/HRMS on Kubernetes.',
     skills: [
-      { name: 'Kubernetes', level: 5, hint: 'EKS dev/prod, Karpenter, GPU nodes, Istio mesh' },
-      { name: 'AWS', level: 5, hint: 'EKS, IAM, multi-region VPCs, API Gateway' },
-      { name: 'GCP', level: 4, hint: 'GKE, Cloud Skills Boost' },
-      { name: 'Azure', level: 4, hint: 'AKS, Azure DevOps pipelines' },
-      { name: 'Docker', level: 5, hint: 'Containerized microservices & AI apps' },
-      { name: 'Terraform', level: 4, hint: '50+ isolated projects, remote state, KMS secrets' },
-      { name: 'Rancher', level: 4, hint: 'Multi-cluster management' },
+      { name: 'Kubernetes', hint: 'EKS dev/prod, Karpenter, GPU nodes, Istio mesh' },
+      { name: 'AWS', hint: 'EKS, IAM, multi-region VPCs, API Gateway' },
+      { name: 'GCP', hint: 'GKE, Cloud Skills Boost' },
+      { name: 'Azure', hint: 'AKS, Azure DevOps pipelines' },
+      { name: 'DigitalOcean', hint: 'Droplets, managed Kubernetes, DNS' },
+      { name: 'Docker', hint: 'Containerized microservices & AI apps' },
+      { name: 'Terraform', hint: '50+ isolated projects, remote state, KMS secrets' },
+      { name: 'Rancher', hint: 'Multi-cluster management' },
     ],
   },
   {
     id: 'cicd',
     title: 'DevOps & CI/CD',
     icon: FiGitBranch,
-    span: 'lg:col-span-2',
+    chipClass: 'skill-chip-cicd',
     description: 'Automated pipelines with embedded security gates.',
     pipeline: ['commit', 'build', 'scan', 'deploy', 'monitor'],
     skills: [
-      { name: 'GitLab CI/CD', level: 5, hint: 'Banking microservices lifecycle' },
-      { name: 'GitHub Actions', level: 5, hint: 'Security scanning in CI at General Magic' },
-      { name: 'Jenkins', level: 4 },
-      { name: 'Helm / ArgoCD', level: 4, hint: 'Frappe ERPNext/HRMS Helm charts on EKS' },
+      { name: 'GitLab CI/CD', hint: 'Banking microservices lifecycle' },
+      { name: 'GitHub Actions', hint: 'Security scanning in CI at General Magic' },
+      { name: 'Helm / ArgoCD', hint: 'Frappe ERPNext/HRMS Helm charts on EKS' },
+      { name: 'Jenkins', hint: 'Legacy pipeline maintenance' },
     ],
   },
   {
     id: 'security',
     title: 'Security & Monitoring',
     icon: FiShield,
+    chipClass: 'skill-chip-security',
     description: 'DevSecOps practices, mesh, and observability.',
     skills: [
-      { name: 'DevSecOps', level: 5, hint: 'Security-first automation' },
-      { name: 'Istio / Service Mesh', level: 4, hint: 'Gateway, VirtualService, mTLS on EKS' },
-      { name: 'Prometheus & Grafana', level: 4, hint: 'EKS monitoring stack, SLO dashboards' },
-      { name: 'Loki & Jaeger', level: 4, hint: 'Log aggregation and distributed tracing' },
-      { name: 'Vulnerability Scanning', level: 4 },
-      { name: 'IAM & Network Security', level: 4 },
+      { name: 'DevSecOps', hint: 'Security-first automation' },
+      { name: 'Istio / Service Mesh', hint: 'Gateway, VirtualService, mTLS on EKS' },
+      { name: 'Prometheus & Grafana', hint: 'EKS monitoring stack, SLO dashboards' },
+      { name: 'Loki & Jaeger', hint: 'Log aggregation and distributed tracing' },
+      { name: 'Vulnerability Scanning' },
+      { name: 'IAM & Network Security' },
     ],
   },
   {
     id: 'ai',
     title: 'AI & ML Infrastructure',
     icon: FiCpu,
+    chipClass: 'skill-chip-ai',
     description: 'LiteLLM gateway, LLM observability, workflow orchestration, and GPU workloads on EKS.',
     skills: [
-      { name: 'AI App Deployment (K8s)', level: 4, hint: 'Multi-product workloads on shared EKS' },
-      { name: 'GPU Workload Orchestration', level: 3, hint: 'GPU nodes, KubeRay/Ray clusters' },
-      { name: 'LLM Serving & Inference', level: 3, hint: 'LiteLLM multi-provider gateway' },
-      { name: 'MLOps Pipelines', level: 3, hint: 'Hatchet and n8n workflow orchestration' },
-      { name: 'AI Security (OWASP LLM)', level: 3 },
+      { name: 'AI App Deployment (K8s)', hint: 'Multi-product workloads on shared EKS' },
+      { name: 'GPU Workload Orchestration', hint: 'GPU nodes, KubeRay/Ray clusters' },
+      { name: 'LLM Serving & Inference', hint: 'LiteLLM multi-provider gateway' },
+      { name: 'MLOps Pipelines', hint: 'Hatchet and n8n workflow orchestration' },
+      { name: 'AI Security (OWASP LLM)' },
     ],
   },
   {
     id: 'programming',
     title: 'Programming & Scripting',
     icon: FiCode,
-    description: 'Automation scripts and tooling for infrastructure workflows.',
+    chipClass: 'skill-chip-code',
+    description:
+      'Many application stacks delivered to production — primary focus is CI/CD pipelines and DevOps, not feature development.',
     skills: [
-      { name: 'Shell Scripting', level: 4 },
-      { name: 'Python', level: 4 },
-      { name: 'TypeScript / Node.js', level: 3 },
-      { name: 'C# / .NET', level: 3 },
+      { name: 'Python', hint: 'Infra automation and pipeline tooling — GMT' },
+      { name: 'Rust', hint: 'ICP canister and platform delivery — GMT; portfolio backend' },
+      { name: 'Go', hint: 'Platform services delivered via CI/CD — GMT' },
+      { name: 'Node.js / TypeScript', hint: 'Delivered Node apps — GMT, Karzo' },
+      { name: 'Java', hint: 'Microservices delivery via GitLab CI/CD — Yoma Bank' },
+      { name: 'Angular', hint: 'Pipeline delivery for Angular teams — Global Wave, Yoma' },
+      { name: 'Vue.js', hint: 'Vue/Node release automation — Karzo Myanmar' },
+      { name: 'C# / .NET', hint: 'Early dev background; later delivery focus — Global Wave' },
+      { name: 'Motoko', hint: 'ICP canister deployment — GMT' },
+      { name: 'Shell Scripting', hint: 'Pipeline and automation scripts across all roles' },
     ],
   },
   {
     id: 'sysadmin',
     title: 'System Administration',
     icon: FiMonitor,
+    chipClass: 'skill-chip-ops',
     description: 'Linux ops, networking, and incident response.',
     skills: [
-      { name: 'Linux/Unix', level: 5 },
-      { name: 'Incident Response', level: 4 },
-      { name: 'Network Engineering', level: 4 },
-      { name: 'Threat Assessment', level: 4 },
+      { name: 'Linux/Unix' },
+      { name: 'Incident Response' },
+      { name: 'Network Engineering' },
+      { name: 'Threat Assessment' },
     ],
   },
 ];
 
-const SkillRow = ({ skill }) => {
-  const prof = levelToProficiency(skill.level);
-  return (
-    <li
-      className="flex items-center justify-between gap-3 py-2 border-b border-slate-200/70 dark:border-slate-700/45 last:border-b-0"
-      title={skill.hint || undefined}
-    >
-      <span className="text-sm text-gray-700 dark:text-gray-300">{skill.name}</span>
-      <span className={`${prof.className} flex-shrink-0`}>{prof.label}</span>
-    </li>
-  );
-};
+const SkillChips = ({ skills, chipClass }) => (
+  <ul className="flex flex-wrap gap-2" role="list">
+    {skills.map((skill) => (
+      <li key={skill.name}>
+        <span className={chipClass} title={skill.hint || undefined}>
+          {skill.name}
+        </span>
+      </li>
+    ))}
+  </ul>
+);
 
-SkillRow.propTypes = {
-  skill: PropTypes.shape({
-    name: PropTypes.string.isRequired,
-    level: PropTypes.number.isRequired,
-    hint: PropTypes.string,
-  }).isRequired,
+SkillChips.propTypes = {
+  skills: PropTypes.arrayOf(
+    PropTypes.shape({
+      name: PropTypes.string.isRequired,
+      hint: PropTypes.string,
+    })
+  ).isRequired,
+  chipClass: PropTypes.string.isRequired,
 };
 
 const MiniPipeline = ({ stages }) => (
@@ -143,7 +150,7 @@ const BentoTile = ({ category, variants }) => {
 
   return (
     <motion.div
-      className={`bento-tile h-full self-stretch ${category.span || ''}`}
+      className="bento-tile h-full self-stretch w-full"
       variants={variants}
       whileHover={{ scale: 1.005 }}
     >
@@ -165,11 +172,7 @@ const BentoTile = ({ category, variants }) => {
 
       {category.pipeline && <MiniPipeline stages={category.pipeline} />}
 
-      <ul>
-        {category.skills.map((skill) => (
-          <SkillRow key={skill.name} skill={skill} />
-        ))}
-      </ul>
+      <SkillChips skills={category.skills} chipClass={category.chipClass} />
     </motion.div>
   );
 };
@@ -178,7 +181,7 @@ BentoTile.propTypes = {
   category: PropTypes.shape({
     title: PropTypes.string.isRequired,
     icon: PropTypes.elementType.isRequired,
-    span: PropTypes.string,
+    chipClass: PropTypes.string.isRequired,
     description: PropTypes.string,
     pipeline: PropTypes.arrayOf(PropTypes.string),
     skills: PropTypes.array.isRequired,
@@ -210,11 +213,12 @@ const Skills = () => {
       <motion.div variants={itemVariants} className="text-center mb-10">
         <h2 className="section-title mb-2">Capability Matrix</h2>
         <p className="text-gray-500 dark:text-gray-400 font-mono text-sm">
-          {'// proficiency across the DevSecOps stack'}
+          {'// technologies in production — hover a chip for context'}
         </p>
       </motion.div>
 
       <div className="space-y-4">
+        {/* Row 1 — largest categories */}
         <motion.div
           className="grid grid-cols-1 md:grid-cols-2 gap-4 items-stretch"
           variants={containerVariants}
@@ -224,11 +228,22 @@ const Skills = () => {
           ))}
         </motion.div>
 
+        {/* Row 2 — security + AI (similar list depth) */}
         <motion.div
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-stretch"
+          className="grid grid-cols-1 md:grid-cols-2 gap-4 items-stretch"
           variants={containerVariants}
         >
-          {skillCategories.slice(2).map((cat) => (
+          {skillCategories.slice(2, 4).map((cat) => (
+            <BentoTile key={cat.id} category={cat} variants={itemVariants} />
+          ))}
+        </motion.div>
+
+        {/* Row 3 — programming + sysadmin (equal skill count) */}
+        <motion.div
+          className="grid grid-cols-1 md:grid-cols-2 gap-4 items-stretch max-w-3xl mx-auto w-full"
+          variants={containerVariants}
+        >
+          {skillCategories.slice(4).map((cat) => (
             <BentoTile key={cat.id} category={cat} variants={itemVariants} />
           ))}
         </motion.div>
@@ -240,13 +255,13 @@ const Skills = () => {
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-xl mx-auto">
           {[
-            { name: 'Burmese', level: 'Native' },
-            { name: 'English', level: 'C2 Proficient (CEFR)' },
+            { name: 'Burmese', detail: 'Native' },
+            { name: 'English', detail: 'C2 Proficient (CEFR)' },
           ].map((lang) => (
             <motion.div key={lang.name} className="bento-tile" whileHover={{ scale: 1.01 }}>
               <div className="flex items-center justify-between gap-3">
                 <span className="text-sm text-gray-600 dark:text-gray-300">{lang.name}</span>
-                <span className="proficiency-expert">{lang.level}</span>
+                <span className="text-xs font-mono text-gray-400 dark:text-gray-500">{lang.detail}</span>
               </div>
             </motion.div>
           ))}

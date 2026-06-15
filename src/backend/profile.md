@@ -38,32 +38,32 @@ Sole platform engineer for organization-wide infrastructure — architecting sec
 Key responsibilities and achievements:
 - Own organization-wide IaC monorepo spanning 50+ isolated Terraform projects with remote state (S3 + DynamoDB), KMS-encrypted secrets workflow, and shared networking/IAM across multiple AWS regions (including Singapore and Thailand).
 - Operate dev and production EKS clusters hosting dozens of internal product workloads — Istio service mesh, cert-manager TLS, Karpenter node provisioning, Rancher multi-cluster management, and GPU nodes for AI workloads.
-- Deployed LiteLLM multi-provider AI gateway on Kubernetes; operate LLM observability (Helicone) and workflow orchestration (Hatchet, n8n) for AI/agent pipelines; support GPU-backed workloads via KubeRay/Ray.
+- Deployed LiteLLM multi-provider AI gateway on Kubernetes; operate workflow orchestration (Hatchet, n8n) for AI/agent pipelines; support GPU-backed workloads via KubeRay/Ray.
 - Built full observability stack: Prometheus, Grafana, Loki, AlertManager, and Jaeger distributed tracing for cluster and application monitoring.
 - Deploy and operate Frappe ERPNext with HRMS on EKS via custom Helm charts — multi-service architecture (Nginx, Gunicorn, Socket.IO, background workers), custom container images with pre-built bench apps, Kubernetes site-provisioning jobs, migrations, and custom Frappe module deployment on dedicated namespaces.
 - Maintain centralized API Gateway routing traffic to multiple internal product backends; provision infra for AI apps, HR/workforce platforms, real-time video/messaging, identity (Keycloak), and Supabase — all on shared Kubernetes platform.
-- Contributed to Internet Computer (ICP) infrastructure and canister developer tooling within the org.
+- Contributed to Internet Computer (ICP) infrastructure and canister delivery within the org; uses Rust, Motoko, Python, Go, and Node for platform tooling — primary focus remains CI/CD pipelines and delivering diverse product stacks to production.
 - Automated CI/CD pipelines with embedded security scanning; drove security-first practices across engineering.
 
-Technologies: AWS, EKS, Kubernetes, Terraform, Istio, Karpenter, cert-manager, Helm, GitHub Actions, Cloudflare, LiteLLM, Helicone, Hatchet, n8n, KubeRay, Keycloak, Frappe, ERPNext, HRMS, Prometheus, Grafana, Loki, Jaeger, API Gateway, Rancher, Supabase, ICP, GPU workload orchestration, MLOps pipelines, OWASP LLM Top 10 awareness
+Technologies: AWS, EKS, Kubernetes, Terraform, Istio, Karpenter, cert-manager, Helm, GitHub Actions, Cloudflare, LiteLLM, Hatchet, n8n, KubeRay, Keycloak, Frappe, ERPNext, HRMS, Prometheus, Grafana, Loki, Jaeger, API Gateway, Rancher, Supabase, ICP, Motoko, Rust, Go, Python, Node.js, GPU workload orchestration, MLOps pipelines, OWASP LLM Top 10 awareness
 
 ### DevOps Engineer — Yoma Bank (Nov 2022 – Feb 2024)
 
-Built and maintained GitLab CI/CD pipelines automating the full lifecycle of microservices for one of Myanmar's largest banks. Improved deployment velocity and cross-team collaboration between development scrum teams and IT operations.
+Built and maintained GitLab CI/CD pipelines automating the full lifecycle of microservices for one of Myanmar's largest banks. Delivered Java and Angular projects to production across multiple application teams — focused on pipelines, releases, and ops collaboration, not application feature development.
 
-Technologies: GitLab CI/CD, Kubernetes, Microservices, IaC, Monitoring
+Technologies: GitLab CI/CD, Kubernetes, Java (delivery), Angular (delivery), Microservices, IaC, Monitoring
 
 ### DevOps Engineer — Karzo Myanmar Co., Ltd. (Mar 2022 – Nov 2022)
 
-Owned the end-to-end DevOps toolchain for a logistics startup — managing code releases, production deployments, VM/database provisioning, and system integration testing to streamline delivery cycles.
+Owned the end-to-end DevOps toolchain for a logistics startup — CI/CD and release delivery for Vue.js and Node.js applications, plus VM/database provisioning and system integration testing.
 
-Technologies: CI/CD, VM Management, System Integration, Performance Testing, SaaS Tools
+Technologies: CI/CD, Vue.js (delivery), Node.js (delivery), VM Management, System Integration, Performance Testing
 
 ### Junior DevOps Engineer / Developer — Global Wave Technology (May 2020 – Feb 2022)
 
-Started as a full-stack developer building cross-platform mobile and web applications, then transitioned into DevOps — gaining foundational experience in infrastructure automation and deployment workflows.
+Started in application development (C#, .NET, Angular), then moved fully into DevOps — since then focused on CI/CD methodologies and delivering projects to production rather than primary feature development.
 
-Technologies: Xamarin, TypeScript, Angular, .NET Core, MySQL, Docker
+Technologies: C#, .NET Core, Xamarin, TypeScript, Angular, MySQL, Docker
 
 ## Skills by Domain
 
@@ -74,6 +74,7 @@ Technologies: Xamarin, TypeScript, Angular, .NET Core, MySQL, Docker
 - Docker — expert
 - Google Cloud Platform (GCP) — advanced
 - Microsoft Azure — advanced
+- DigitalOcean — experienced
 - Terraform — advanced
 - Rancher — advanced
 - Helm, Karpenter, Istio, cert-manager — experienced
@@ -109,20 +110,24 @@ Technologies: Xamarin, TypeScript, Angular, .NET Core, MySQL, Docker
 - AI Security (OWASP LLM Top 10) — intermediate
 - Vector DB Infrastructure — intermediate
 - LiteLLM — experienced
-- Helicone (LLM observability) — experienced
 - Hatchet / n8n (workflow orchestration) — experienced
 - KubeRay / Ray — experienced
 - Keycloak — experienced
 
 ### Programming & Scripting
 
-- Shell Scripting — advanced
-- Python — advanced
-- Node.js — intermediate
-- C# / .NET — intermediate
-- Java — intermediate
-- TypeScript / Angular — intermediate
-- Bash — experienced
+Primary focus: CI/CD, automation, and delivering projects to production. Comfortable across many stacks from involvement shipping diverse teams' work — not a dedicated application developer.
+
+- Python — advanced (infra automation, pipeline tooling — GMT)
+- Rust — advanced (ICP canister delivery, platform tooling — GMT; portfolio backend)
+- Go — experienced (platform services delivered via CI/CD — GMT)
+- Node.js / TypeScript — advanced (delivered Node stacks — GMT, Karzo)
+- Shell Scripting / Bash — advanced
+- Java — experienced (microservices delivery — Yoma Bank)
+- Angular — experienced (pipeline delivery — Global Wave, Yoma Bank)
+- Vue.js — experienced (release delivery — Karzo Myanmar)
+- C# / .NET — experienced (early dev background — Global Wave)
+- Motoko — experienced (ICP canister deployment — GMT)
 
 ### System Administration
 
@@ -164,4 +169,5 @@ Technologies: Xamarin, TypeScript, Angular, .NET Core, MySQL, Docker
 - Platform ownership at General Magic: sole engineer for 50+ Terraform projects, dev/prod EKS, LiteLLM gateway, Istio mesh, Frappe ERPNext/HRMS on Kubernetes, and full observability stack
 - DevSecOps strength: CKS + CKA + AWS SysOps; hands-on with GitLab/GitHub CI, SonarQube, vulnerability scanning, IAM/network security
 - Banking experience: Yoma Bank microservices CI/CD at scale in a regulated environment
-- Full-stack origin: started as developer (Xamarin, Angular, .NET) before moving fully into DevOps — understands dev + ops perspective
+- Delivery-focused engineer: involved with many stacks (Java, Angular, Vue, Node, Python, Rust, Go) but centered on CI/CD and getting projects to production — understands dev teams without being a primary app developer
+- Full-stack origin: early C#/Angular at Global Wave, then DevOps delivery across banking, logistics, and AI platform work at GMT

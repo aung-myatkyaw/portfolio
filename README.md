@@ -201,7 +201,7 @@ The AI agent will not answer:
 - Personal / private questions (age, nationality, etc.)
 - Off-topic questions unrelated to professional background
 
-CLI-style commands (e.g. `kubectl get certs`, `whoami`, `cat role.txt`) are treated as on-topic and answered with short terminal-style output.
+Natural-language answers only — no terminal or kubectl-style output, even if the visitor phrases a question as a shell command.
 
 ---
 
