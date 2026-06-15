@@ -33,9 +33,19 @@
 
 ### Senior DevSecOps Engineer — General Magic (Thailand) Co., Ltd. (May 2024 – Present)
 
-Architecting secure multicloud infrastructure for scalable AI and agentic AI applications. Automated CI/CD pipelines with embedded security scanning, deployed containerized AI workloads on Kubernetes, and drove adoption of security-first practices across the engineering org.
+Sole platform engineer for organization-wide infrastructure — architecting secure, scalable platforms for AI-native and agentic AI applications across a global engineering org.
 
-Technologies: AWS, Kubernetes, GitHub Actions, Terraform, AI Infrastructure, Prometheus, Grafana, LiteLLM, GPU workload orchestration, MLOps pipelines, OWASP LLM Top 10 awareness
+Key responsibilities and achievements:
+- Own organization-wide IaC monorepo spanning 50+ isolated Terraform projects with remote state (S3 + DynamoDB), KMS-encrypted secrets workflow, and shared networking/IAM across multiple AWS regions (including Singapore and Thailand).
+- Operate dev and production EKS clusters hosting dozens of internal product workloads — Istio service mesh, cert-manager TLS, Karpenter node provisioning, Rancher multi-cluster management, and GPU nodes for AI workloads.
+- Deployed LiteLLM multi-provider AI gateway on Kubernetes; operate LLM observability (Helicone) and workflow orchestration (Hatchet, n8n) for AI/agent pipelines; support GPU-backed workloads via KubeRay/Ray.
+- Built full observability stack: Prometheus, Grafana, Loki, AlertManager, and Jaeger distributed tracing for cluster and application monitoring.
+- Deploy and operate Frappe ERPNext with HRMS on EKS via custom Helm charts — multi-service architecture (Nginx, Gunicorn, Socket.IO, background workers), custom container images with pre-built bench apps, Kubernetes site-provisioning jobs, migrations, and custom Frappe module deployment on dedicated namespaces.
+- Maintain centralized API Gateway routing traffic to multiple internal product backends; provision infra for AI apps, HR/workforce platforms, real-time video/messaging, identity (Keycloak), and Supabase — all on shared Kubernetes platform.
+- Contributed to Internet Computer (ICP) infrastructure and canister developer tooling within the org.
+- Automated CI/CD pipelines with embedded security scanning; drove security-first practices across engineering.
+
+Technologies: AWS, EKS, Kubernetes, Terraform, Istio, Karpenter, cert-manager, Helm, GitHub Actions, Cloudflare, LiteLLM, Helicone, Hatchet, n8n, KubeRay, Keycloak, Frappe, ERPNext, HRMS, Prometheus, Grafana, Loki, Jaeger, API Gateway, Rancher, Supabase, ICP, GPU workload orchestration, MLOps pipelines, OWASP LLM Top 10 awareness
 
 ### DevOps Engineer — Yoma Bank (Nov 2022 – Feb 2024)
 
@@ -66,7 +76,9 @@ Technologies: Xamarin, TypeScript, Angular, .NET Core, MySQL, Docker
 - Microsoft Azure — advanced
 - Terraform — advanced
 - Rancher — advanced
-- Helm, Karpenter, Istio — experienced
+- Helm, Karpenter, Istio, cert-manager — experienced
+- API Gateway, Cloudflare — experienced
+- Frappe / ERPNext / HRMS on Kubernetes — experienced
 
 ### DevOps & CI/CD
 
@@ -82,6 +94,7 @@ Technologies: Xamarin, TypeScript, Angular, .NET Core, MySQL, Docker
 - DevSecOps — expert
 - Istio / Service Mesh — advanced
 - Prometheus & Grafana — advanced
+- Loki & Jaeger — experienced
 - Vulnerability Scanning — advanced
 - IAM & Network Security — advanced
 - Cloudflare / API Gateways — advanced
@@ -96,6 +109,10 @@ Technologies: Xamarin, TypeScript, Angular, .NET Core, MySQL, Docker
 - AI Security (OWASP LLM Top 10) — intermediate
 - Vector DB Infrastructure — intermediate
 - LiteLLM — experienced
+- Helicone (LLM observability) — experienced
+- Hatchet / n8n (workflow orchestration) — experienced
+- KubeRay / Ray — experienced
+- Keycloak — experienced
 
 ### Programming & Scripting
 
@@ -144,6 +161,7 @@ Technologies: Xamarin, TypeScript, Angular, .NET Core, MySQL, Docker
 ## Common Recruiter Topics
 
 - Agentic AI infra: designs secure multicloud K8s platforms for AI workloads, embeds security scanning in CI/CD, orchestrates GPU/AI containers
+- Platform ownership at General Magic: sole engineer for 50+ Terraform projects, dev/prod EKS, LiteLLM gateway, Istio mesh, Frappe ERPNext/HRMS on Kubernetes, and full observability stack
 - DevSecOps strength: CKS + CKA + AWS SysOps; hands-on with GitLab/GitHub CI, SonarQube, vulnerability scanning, IAM/network security
 - Banking experience: Yoma Bank microservices CI/CD at scale in a regulated environment
 - Full-stack origin: started as developer (Xamarin, Angular, .NET) before moving fully into DevOps — understands dev + ops perspective

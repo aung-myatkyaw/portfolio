@@ -201,6 +201,8 @@ The AI agent will not answer:
 - Personal / private questions (age, nationality, etc.)
 - Off-topic questions unrelated to professional background
 
+CLI-style commands (e.g. `kubectl get certs`, `whoami`, `cat role.txt`) are treated as on-topic and answered with short terminal-style output.
+
 ---
 
 ## Custom Domain Setup

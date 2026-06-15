@@ -2,6 +2,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiSun, FiMoon, FiMenu, FiX } from 'react-icons/fi';
+import { portfolioCanisterDashboardUrl } from '../lib/icp';
 
 const navItems = [
   { label: 'Home', path: '/' },
@@ -128,7 +129,7 @@ const Navbar = () => {
                 Available for Senior DevSecOps / Platform Engineering roles
               </span>
               <a
-                href="https://trwm2-7aaaa-aaaal-qwm6q-cai.icp0.io"
+                href={portfolioCanisterDashboardUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hidden sm:inline hover:text-primary-500 dark:hover:text-primary-400 transition-colors"

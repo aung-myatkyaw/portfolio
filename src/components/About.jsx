@@ -31,7 +31,7 @@ const highlights = [
     title: 'Expertise',
     tag: 'ai',
     description:
-      'Architecting secure multicloud infrastructure for AI applications, DevSecOps automation, Kubernetes orchestration, and resilient CI/CD pipelines',
+      'Sole platform engineer for multi-product EKS and IaC estate — AI gateway, Frappe ERPNext/HRMS, service mesh, and observability for AI-native workloads',
   },
   {
     icon: FiShield,

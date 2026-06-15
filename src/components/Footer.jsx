@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { FaLinkedin, FaGithub, FaGitlab } from 'react-icons/fa';
+import { PORTFOLIO_SITE_URL, portfolioCanisterDashboardUrl } from '../lib/icp';
 
 const Footer = () => {
   const socialLinks = [
@@ -47,13 +48,18 @@ const Footer = () => {
           </div>
 
           <div className="flex flex-wrap items-center justify-center gap-3 text-[11px] font-mono text-gray-500 dark:text-gray-400">
-            <span className="status-badge">
+            <a
+              href={portfolioCanisterDashboardUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="status-badge hover:border-primary-500/40 transition-colors"
+            >
               <span className="status-badge-dot" />
               Deployed on ICP
-            </span>
+            </a>
             <span className="hidden sm:inline text-gray-300 dark:text-gray-600">|</span>
             <a
-              href="https://trwm2-7aaaa-aaaal-qwm6q-cai.icp0.io"
+              href={PORTFOLIO_SITE_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-primary-500 dark:hover:text-primary-400 transition-colors"
