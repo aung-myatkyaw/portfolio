@@ -42,6 +42,7 @@ jobs:
         continue-on-error: true
         env:
           TRIVY_VERSION: ${{ vars.TRIVY_VERSION || 'v0.72.0' }}
+          TRIVY_DISABLE_VEX_NOTICE: "true"
         run: |
           set -euo pipefail
           curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin "$TRIVY_VERSION"
@@ -70,14 +71,14 @@ jobs:
       - name: Validate Trivy output
         id: validate_trivy
         run: |
-          if [ ! -s trivy.txt ]; then
+          if [ "${{ steps.scan.outputs.scan_success }}" != "true" ]; then
+            echo "Trivy scan did not complete successfully."
+            echo "scan_valid=false" >> "$GITHUB_OUTPUT"
+          elif [ ! -s trivy.txt ]; then
             echo "Trivy output file is empty or does not exist."
             echo "scan_valid=false" >> "$GITHUB_OUTPUT"
-          elif grep -qi "error" trivy.txt; then
-            echo "Trivy scan encountered an error:"
-            cat trivy.txt
-            echo "scan_valid=false" >> "$GITHUB_OUTPUT"
           else
+            echo "Trivy scan completed — review findings below if any."
             echo "scan_valid=true" >> "$GITHUB_OUTPUT"
           fi
 
