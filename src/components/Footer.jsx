@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { FaLinkedin, FaGithub, FaGitlab } from 'react-icons/fa';
-import { PORTFOLIO_SITE_URL, portfolioCanisterDashboardUrl } from '../lib/icp';
+import { PORTFOLIO_SITE_URL, PORTFOLIO_REPO_URL, portfolioCanisterDashboardUrl } from '../lib/icp';
 
 const Footer = () => {
   const socialLinks = [
@@ -65,6 +65,15 @@ const Footer = () => {
               className="hover:text-primary-500 dark:hover:text-primary-400 transition-colors"
             >
               aungmyatkyaw.cv ↗
+            </a>
+            <span className="hidden sm:inline text-gray-300 dark:text-gray-600">|</span>
+            <a
+              href={PORTFOLIO_REPO_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-primary-500 dark:hover:text-primary-400 transition-colors"
+            >
+              source on GitHub ↗
             </a>
           </div>
 
