@@ -158,8 +158,14 @@ Pushes to `main` that touch deploy-related paths run [`.github/workflows/icp-dep
 | `NODE_VERSION` | `22` | Node.js version for `setup-node` and `npm ci` |
 | `ICP_DEPLOY_MODE` | `full` | `full` = `icp deploy portfolio`; `sync` = asset-only `icp sync portfolio` (cheaper for frontend-only changes) |
 | `ICP_CUSTOM_DOMAINS` | _(unset)_ | Comma-separated domains to validate/register after deploy, e.g. `aungmyatkyaw.cv,www.aungmyatkyaw.cv` |
+| `TRIVY_VERSION` | `v0.57.0` | Trivy release tag for [code-test.yml](.github/workflows/code-test.yml) |
+| `TIMEZONE` | `Asia/Bangkok` | Timestamp timezone in Trivy issue comments |
 
 `VITE_BACKEND_CANISTER_ID` is not needed in CI — icp-cli injects canister IDs at deploy time and the frontend reads them from the `ic_env` cookie.
+
+### Code security scan
+
+[`.github/workflows/code-test.yml`](.github/workflows/code-test.yml) runs **Trivy** on push/PR to `main` (dependency lockfiles and `src/`). HIGH/CRITICAL findings fail the check, publish a job summary, and open/update a GitHub issue. No SonarQube, BOT_TOKEN, or container registry login required.
 
 **Personal vs organization repos:** GitHub Actions works the same on both. For a **public** personal repo, Actions minutes are **unlimited and free**. On **private** repos, personal accounts include ~2,000 free minutes/month. Organization repos use the org's quota and may require an admin to enable Actions or approve third-party workflow actions — but the workflow itself does not need AWS, reusable workflows, or org-level infrastructure.
 
@@ -377,7 +383,7 @@ portfolio/
 ├── public/                 # Static assets, CSP, ic-domains
 ├── icp.yaml                # ICP CLI canister definitions
 ├── .icp/data/              # ICP CLI canister ID mappings (ic.ids.json)
-└── .github/workflows/      # Mainnet deploy on push to main
+└── .github/workflows/      # Mainnet deploy + Trivy scan
 ```
 
 ---
