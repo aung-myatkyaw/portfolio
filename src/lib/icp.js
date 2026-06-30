@@ -1,4 +1,4 @@
-/** Mainnet portfolio asset canister — keep in sync with canister_ids.json */
+/** Mainnet portfolio asset canister — keep in sync with .icp/data/mappings/ic.ids.json */
 export const PORTFOLIO_CANISTER_ID = 'trwm2-7aaaa-aaaal-qwm6q-cai';
 
 export const PORTFOLIO_SITE_URL = 'https://aungmyatkyaw.cv';

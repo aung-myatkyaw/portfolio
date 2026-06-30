@@ -114,7 +114,10 @@ const AskMePanel = ({ variant = 'default' }) => {
           Backend canister not yet deployed
         </p>
         <p className="text-gray-500 dark:text-gray-400 text-xs max-w-sm leading-relaxed">
-          Set <code className="text-primary-400 font-mono">VITE_BACKEND_CANISTER_ID</code> after deploying the Rust canister.
+          Backend canister ID is missing. Deploy with icp-cli so the asset canister sets the{' '}
+          <code className="text-primary-400 font-mono">ic_env</code> cookie, or set{' '}
+          <code className="text-primary-400 font-mono">VITE_BACKEND_CANISTER_ID</code> in{' '}
+          <code className="text-primary-400 font-mono">.env.local</code> for local dev.
         </p>
       </div>
     );

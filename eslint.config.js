@@ -5,7 +5,7 @@ import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
 
 export default [
-  { ignores: ['dist', '.dfx/**'] },
+  { ignores: ['dist', '.icp/cache/**'] },
   {
     files: ['tailwind.config.js', 'postcss.config.js'],
     languageOptions: {

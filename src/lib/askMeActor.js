@@ -1,6 +1,15 @@
 import { HttpAgent, Actor } from '@dfinity/agent';
+import { safeGetCanisterEnv } from '@icp-sdk/core/agent/canister-env';
 
-export const BACKEND_CANISTER_ID = import.meta.env.VITE_BACKEND_CANISTER_ID;
+/** icp-cli injects PUBLIC_CANISTER_ID:backend at deploy time; asset canister exposes it via ic_env cookie. */
+export function getBackendCanisterId() {
+  const canisterEnv = safeGetCanisterEnv();
+  return (
+    canisterEnv?.['PUBLIC_CANISTER_ID:backend'] ||
+    import.meta.env.VITE_BACKEND_CANISTER_ID ||
+    ''
+  );
+}
 
 const idlFactory = ({ IDL }) => {
   const AskResult = IDL.Variant({ Ok: IDL.Text, Err: IDL.Text });
@@ -10,6 +19,7 @@ const idlFactory = ({ IDL }) => {
 };
 
 let actorCache = null;
+let actorCanisterId = null;
 
 const isLocal =
   window.location.hostname === 'localhost' ||
@@ -17,23 +27,31 @@ const isLocal =
   window.location.hostname.endsWith('.localhost');
 
 export const getActor = async () => {
-  if (actorCache) return actorCache;
+  const canisterId = getBackendCanisterId();
+  if (!canisterId) {
+    throw new Error('Backend canister ID not available');
+  }
+  if (actorCache && actorCanisterId === canisterId) {
+    return actorCache;
+  }
   const agent = await HttpAgent.create({
     host: isLocal ? 'http://localhost:4943' : 'https://icp-api.io',
     shouldFetchRootKey: isLocal,
   });
   actorCache = Actor.createActor(idlFactory, {
     agent,
-    canisterId: BACKEND_CANISTER_ID,
+    canisterId,
   });
+  actorCanisterId = canisterId;
   return actorCache;
 };
 
 export const resetActorCache = () => {
   actorCache = null;
+  actorCanisterId = null;
 };
 
-export const isAskMeConfigured = () => Boolean(BACKEND_CANISTER_ID);
+export const isAskMeConfigured = () => Boolean(getBackendCanisterId());
 
 export const SUGGESTED_QUESTIONS = [
   'What are his Kubernetes certifications?',

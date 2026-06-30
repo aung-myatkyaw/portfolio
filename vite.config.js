@@ -21,7 +21,7 @@ export default defineConfig({
           'vendor-emailjs': ['@emailjs/browser'],
           'vendor-turnstile': ['@marsidev/react-turnstile'],
           'vendor-observer': ['react-intersection-observer'],
-          'vendor-icp': ['@dfinity/agent', '@dfinity/candid', '@dfinity/principal'],
+          'vendor-icp': ['@dfinity/agent', '@dfinity/candid', '@dfinity/principal', '@icp-sdk/core'],
         },
       },
     },

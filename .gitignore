@@ -25,11 +25,9 @@ dist-ssr
 
 .env
 .env.local
-.env.dfx.local
 .env.production
 
-# ICP CLI / legacy DFX local artifacts
-.dfx
+# ICP CLI local artifacts
 .icp/cache/
 
 # Rust build output
