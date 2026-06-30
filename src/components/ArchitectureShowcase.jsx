@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { PORTFOLIO_REPO_URL } from '../lib/icp';
 import PropTypes from 'prop-types';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
@@ -147,6 +148,7 @@ const diagrams = [
     id: 'icp',
     title: 'This Portfolio on ICP',
     description: 'Static frontend on ICP asset canister with Rust backend making HTTPS outcalls.',
+    repoUrl: PORTFOLIO_REPO_URL,
     nodes: [
       { id: 'browser', label: 'Browser', x: 10, y: 50 },
       { id: 'asset', label: 'Asset Canister', x: 100, y: 50 },
@@ -223,6 +225,16 @@ const ArchitectureDiagram = ({ diagram }) => {
           />
         ))}
       </svg>
+      {diagram.repoUrl && (
+        <a
+          href={diagram.repoUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 mt-3 text-[11px] font-mono text-primary-600 dark:text-primary-400 hover:underline"
+        >
+          View source on GitHub ↗
+        </a>
+      )}
     </div>
   );
 };
@@ -235,6 +247,7 @@ ArchitectureDiagram.propTypes = {
     nodes: PropTypes.array.isRequired,
     edges: PropTypes.array.isRequired,
     tooltips: PropTypes.object.isRequired,
+    repoUrl: PropTypes.string,
   }).isRequired,
 };
 
