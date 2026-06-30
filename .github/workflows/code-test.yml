@@ -108,6 +108,7 @@ jobs:
         env:
           SCAN_SUCCESS: ${{ steps.scan.outputs.scan_success }}
           TIMEZONE: ${{ vars.TIMEZONE || 'Asia/Bangkok' }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
 
