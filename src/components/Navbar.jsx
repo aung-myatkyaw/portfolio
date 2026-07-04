@@ -16,7 +16,9 @@ const navItems = [
 const Navbar = () => {
   const [isDark, setIsDark] = useState(true);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+  const [scrolled, setScrolled] = useState(() =>
+    typeof window !== 'undefined' && window.scrollY > 80,
+  );
   const location = useLocation();
 
   useEffect(() => {
@@ -28,12 +30,7 @@ const Navbar = () => {
   }, [isDark]);
 
   useEffect(() => {
-    setIsMenuOpen(false);
-  }, [location]);
-
-  useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 80);
-    onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
@@ -159,6 +156,7 @@ const Navbar = () => {
                   key={item.path}
                   to={item.path}
                   className={`block ${navLinkClass(item.path)}`}
+                  onClick={() => setIsMenuOpen(false)}
                 >
                   {item.label}
                 </Link>
