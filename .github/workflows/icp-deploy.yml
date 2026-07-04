@@ -17,6 +17,7 @@ on:
       - "tailwind.config.js"
       - "postcss.config.js"
       - ".github/workflows/icp-deploy.yml"
+      - ".github/icp-deploy-filters.yaml"
   workflow_dispatch:
     inputs:
       deploy_backend:
@@ -57,32 +58,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
         with:
-          fetch-depth: 0
+          fetch-depth: 2
 
       - name: Detect changed paths
-        uses: dorny/paths-filter@v3
+        uses: dorny/paths-filter@v4
         id: filter
         if: github.event_name == 'push'
         with:
-          filters: |
-            backend:
-              - 'src/backend/**'
-              - 'Cargo.toml'
-              - 'Cargo.lock'
-              - 'icp.yaml'
-              - '.icp/data/**'
-            frontend:
-              - 'src/**'
-              - '!src/backend/**'
-              - 'public/**'
-              - 'package.json'
-              - 'package-lock.json'
-              - 'index.html'
-              - 'vite.config.js'
-              - 'tailwind.config.js'
-              - 'postcss.config.js'
-              - 'icp.yaml'
-              - '.icp/data/**'
+          base: ${{ github.ref }}
+          filters: .github/icp-deploy-filters.yaml
 
       - name: Resolve deploy scope
         id: scope
