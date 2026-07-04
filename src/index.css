@@ -1,6 +1,8 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+@config "../tailwind.config.js";
+
+@custom-variant dark (&:where(.dark, .dark *));
 
 @layer base {
   html {
@@ -32,11 +34,11 @@
   }
 
   .card {
-    @apply panel shadow-lg hover:shadow-xl dark:hover:shadow-cyan-900/20 dark:hover:border-primary-700/50 transition-all duration-300;
+    @apply bg-white/80 dark:bg-slate-800/40 backdrop-blur-md border border-gray-200/80 dark:border-slate-700/50 rounded-lg shadow-lg hover:shadow-xl dark:hover:shadow-cyan-900/20 dark:hover:border-primary-700/50 transition-all duration-300;
   }
 
   .terminal-window {
-    @apply panel font-mono text-sm overflow-hidden;
+    @apply bg-white/80 dark:bg-slate-800/40 backdrop-blur-md border border-gray-200/80 dark:border-slate-700/50 rounded-lg font-mono text-sm overflow-hidden;
   }
 
   .terminal-line {
@@ -66,7 +68,7 @@
   }
 
   .bento-tile {
-    @apply card p-5 flex flex-col self-start w-full;
+    @apply bg-white/80 dark:bg-slate-800/40 backdrop-blur-md border border-gray-200/80 dark:border-slate-700/50 rounded-lg shadow-lg hover:shadow-xl dark:hover:shadow-cyan-900/20 dark:hover:border-primary-700/50 transition-all duration-300 p-5 flex flex-col self-start w-full;
   }
 
   .proficiency-expert {
@@ -102,8 +104,7 @@
   .tag-banking { @apply bg-teal-100 dark:bg-teal-900/40 text-teal-800 dark:text-teal-200; }
 
   .credential-card {
-    @apply card p-5 h-full flex flex-col relative overflow-hidden
-           hover:border-primary-500/40 dark:hover:border-primary-400/40;
+    @apply bg-white/80 dark:bg-slate-800/40 backdrop-blur-md border border-gray-200/80 dark:border-slate-700/50 rounded-lg shadow-lg hover:shadow-xl dark:hover:shadow-cyan-900/20 dark:hover:border-primary-700/50 transition-all duration-300 p-5 h-full flex flex-col relative overflow-hidden hover:border-primary-500/40 dark:hover:border-primary-400/40;
   }
 
   .btn {
@@ -111,13 +112,11 @@
   }
 
   .btn-primary {
-    @apply btn bg-primary-600 text-white hover:bg-primary-500 dark:bg-primary-500 dark:hover:bg-primary-400 
-           shadow-md hover:shadow-primary-500/30;
+    @apply px-6 py-2 rounded-lg transition-all duration-300 transform hover:scale-105 font-medium bg-primary-600 text-white hover:bg-primary-500 dark:bg-primary-500 dark:hover:bg-primary-400 shadow-md hover:shadow-primary-500/30;
   }
 
   .btn-secondary {
-    @apply btn bg-slate-600 text-white hover:bg-slate-500 dark:bg-slate-700 dark:hover:bg-slate-600
-           dark:border dark:border-slate-600 dark:hover:border-slate-500;
+    @apply px-6 py-2 rounded-lg transition-all duration-300 transform hover:scale-105 font-medium bg-slate-600 text-white hover:bg-slate-500 dark:bg-slate-700 dark:hover:bg-slate-600 dark:border dark:border-slate-600 dark:hover:border-slate-500;
   }
 
   .section-title {
@@ -146,33 +145,27 @@
   }
 
   .skill-chip-cloud {
-    @apply skill-chip border-blue-500/20 dark:border-blue-500/25 bg-blue-500/5 dark:bg-blue-500/10
-           text-blue-800 dark:text-blue-200/90;
+    @apply inline-flex items-center px-2.5 py-1 text-[11px] font-mono rounded-md border transition-colors cursor-default border-blue-500/20 dark:border-blue-500/25 bg-blue-500/5 dark:bg-blue-500/10 text-blue-800 dark:text-blue-200/90;
   }
 
   .skill-chip-cicd {
-    @apply skill-chip border-emerald-500/20 dark:border-emerald-500/25 bg-emerald-500/5 dark:bg-emerald-500/10
-           text-emerald-800 dark:text-emerald-200/90;
+    @apply inline-flex items-center px-2.5 py-1 text-[11px] font-mono rounded-md border transition-colors cursor-default border-emerald-500/20 dark:border-emerald-500/25 bg-emerald-500/5 dark:bg-emerald-500/10 text-emerald-800 dark:text-emerald-200/90;
   }
 
   .skill-chip-security {
-    @apply skill-chip border-amber-500/20 dark:border-amber-500/25 bg-amber-500/5 dark:bg-amber-500/10
-           text-amber-900 dark:text-amber-200/90;
+    @apply inline-flex items-center px-2.5 py-1 text-[11px] font-mono rounded-md border transition-colors cursor-default border-amber-500/20 dark:border-amber-500/25 bg-amber-500/5 dark:bg-amber-500/10 text-amber-900 dark:text-amber-200/90;
   }
 
   .skill-chip-ai {
-    @apply skill-chip border-purple-500/20 dark:border-purple-500/25 bg-purple-500/5 dark:bg-purple-500/10
-           text-purple-800 dark:text-purple-200/90;
+    @apply inline-flex items-center px-2.5 py-1 text-[11px] font-mono rounded-md border transition-colors cursor-default border-purple-500/20 dark:border-purple-500/25 bg-purple-500/5 dark:bg-purple-500/10 text-purple-800 dark:text-purple-200/90;
   }
 
   .skill-chip-code {
-    @apply skill-chip border-cyan-500/20 dark:border-cyan-500/25 bg-cyan-500/5 dark:bg-cyan-500/10
-           text-cyan-900 dark:text-cyan-200/90;
+    @apply inline-flex items-center px-2.5 py-1 text-[11px] font-mono rounded-md border transition-colors cursor-default border-cyan-500/20 dark:border-cyan-500/25 bg-cyan-500/5 dark:bg-cyan-500/10 text-cyan-900 dark:text-cyan-200/90;
   }
 
   .skill-chip-ops {
-    @apply skill-chip border-slate-400/25 dark:border-slate-500/30 bg-slate-500/5 dark:bg-slate-800/80
-           text-gray-700 dark:text-slate-300;
+    @apply inline-flex items-center px-2.5 py-1 text-[11px] font-mono rounded-md border transition-colors cursor-default border-slate-400/25 dark:border-slate-500/30 bg-slate-500/5 dark:bg-slate-800/80 text-gray-700 dark:text-slate-300;
   }
 
   .nav-link {
