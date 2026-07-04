@@ -35,6 +35,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      pull-requests: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
@@ -50,6 +51,59 @@ jobs:
 
       - name: Build frontend
         run: npm run build
+
+      - name: Comment PR on success
+        if: github.event_name == 'pull_request' && success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh pr comment "${{ github.event.pull_request.number }}" \
+            --body "**npm ci & build** passed for \`${GITHUB_SHA:0:7}\`."
+
+      - name: Comment PR on failure
+        if: github.event_name == 'pull_request' && failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh pr comment "${{ github.event.pull_request.number }}" \
+            --body "**npm ci & build** failed for \`${GITHUB_SHA:0:7}\`. See [workflow run](${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID})."
+
+  rust-check:
+    name: cargo build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Setup Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+
+      - name: Cache cargo
+        uses: Swatinem/rust-cache@v2
+
+      - name: Build backend canister
+        run: cargo build --target wasm32-unknown-unknown
+
+      - name: Comment PR on success
+        if: github.event_name == 'pull_request' && success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh pr comment "${{ github.event.pull_request.number }}" \
+            --body "**cargo build** passed for \`${GITHUB_SHA:0:7}\`."
+
+      - name: Comment PR on failure
+        if: github.event_name == 'pull_request' && failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh pr comment "${{ github.event.pull_request.number }}" \
+            --body "**cargo build** failed for \`${GITHUB_SHA:0:7}\`. See [workflow run](${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID})."
 
   trivy-scan:
     name: Trivy dependency scan
@@ -143,7 +197,7 @@ jobs:
           if [ -s trivy.txt ] && [ "$SCAN_SUCCESS" = "true" ] && grep -q "Total: [1-9][0-9]*" trivy.txt; then
             gh label create vulnerability --description "Dependency vulnerability" --color C13B4F --force || true
             ISSUE_BODY=$(cat << EOF
-          # Code dependency scan failed
+          # Trivy dependency scan failed
 
           **Commit:** \`${GITHUB_SHA:0:7}\`
           **Scan date:** $(TZ="$TIMEZONE" date '+%Y-%m-%d %H:%M:%S %Z')
@@ -179,6 +233,10 @@ jobs:
 
           if [ "$SCAN_SUCCESS" != "true" ]; then
             echo "Trivy scan failed after retries." >> "$GITHUB_STEP_SUMMARY"
+            if [ "${{ github.event_name }}" = "pull_request" ]; then
+              gh pr comment "${{ github.event.pull_request.number }}" \
+                --body "**Trivy dependency scan** failed to complete for \`${GITHUB_SHA:0:7}\`. See [workflow run](${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID})."
+            fi
             exit 1
           fi
 
@@ -187,5 +245,5 @@ jobs:
           fi
 
           if [ "${{ github.event_name }}" = "pull_request" ]; then
-            gh pr comment "${{ github.event.pull_request.number }}" --body "Trivy scan passed for \`${GITHUB_SHA:0:7}\`."
+            gh pr comment "${{ github.event.pull_request.number }}" --body "**Trivy dependency scan** passed for \`${GITHUB_SHA:0:7}\`."
           fi
