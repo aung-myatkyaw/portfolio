@@ -156,7 +156,7 @@ Pushes to `main` that touch deploy-related paths run [`.github/workflows/icp-dep
 | `ICP_IDENTITY_NAME` | `personal` | ICP identity used for `icp deploy` (`icp identity export <name>`) |
 | `ICP_CLI_VERSION` | `1.0.2` | `@icp-sdk/icp-cli` npm version to install in CI |
 | `NODE_VERSION` | `22` | Node.js version for `setup-node` and `npm ci` |
-| `ICP_DEPLOY_MODE` | `full` | `full` = `icp deploy portfolio`; `sync` = asset-only `icp sync portfolio` (cheaper for frontend-only changes) |
+| `ICP_DEPLOY_MODE` | `sync` | `full` = `icp deploy portfolio`; `sync` = asset-only `icp sync portfolio` (cheaper for frontend-only changes). Backend deploys only when Rust/backend paths change. |
 | `ICP_CUSTOM_DOMAINS` | _(unset)_ | Comma-separated domains to validate/register after deploy, e.g. `aungmyatkyaw.cv,www.aungmyatkyaw.cv` |
 | `TRIVY_VERSION` | `v0.57.0` | Trivy release tag for [code-test.yml](.github/workflows/code-test.yml) |
 | `TIMEZONE` | `Asia/Bangkok` | Timestamp timezone in Trivy issue comments |

@@ -19,10 +19,20 @@ on:
       - ".github/workflows/icp-deploy.yml"
   workflow_dispatch:
     inputs:
-      deploy_mode:
-        description: "full — deploy backend + portfolio WASM; sync — backend deploy + portfolio asset sync only"
+      deploy_backend:
+        description: "Deploy backend Rust canister"
         required: false
-        default: full
+        default: true
+        type: boolean
+      deploy_portfolio:
+        description: "Deploy or sync portfolio asset canister"
+        required: false
+        default: true
+        type: boolean
+      deploy_mode:
+        description: "Portfolio only — full reinstalls asset canister WASM; sync uploads assets only"
+        required: false
+        default: sync
         type: choice
         options:
           - full
@@ -46,17 +56,68 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Detect changed paths
+        uses: dorny/paths-filter@v3
+        id: filter
+        if: github.event_name == 'push'
+        with:
+          filters: |
+            backend:
+              - 'src/backend/**'
+              - 'Cargo.toml'
+              - 'Cargo.lock'
+              - 'icp.yaml'
+              - '.icp/data/**'
+            frontend:
+              - 'src/**'
+              - '!src/backend/**'
+              - 'public/**'
+              - 'package.json'
+              - 'package-lock.json'
+              - 'index.html'
+              - 'vite.config.js'
+              - 'tailwind.config.js'
+              - 'postcss.config.js'
+              - 'icp.yaml'
+              - '.icp/data/**'
+
+      - name: Resolve deploy scope
+        id: scope
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            backend="${{ inputs.deploy_backend }}"
+            frontend="${{ inputs.deploy_portfolio }}"
+          else
+            backend="${{ steps.filter.outputs.backend }}"
+            frontend="${{ steps.filter.outputs.frontend }}"
+          fi
+          echo "backend=$backend" >> "$GITHUB_OUTPUT"
+          echo "frontend=$frontend" >> "$GITHUB_OUTPUT"
+          echo "Deploy backend: $backend"
+          echo "Deploy portfolio: $frontend"
+
+      - name: Skip — no canister changes
+        if: steps.scope.outputs.backend != 'true' && steps.scope.outputs.frontend != 'true'
+        run: |
+          echo "Workflow triggered but no backend or frontend paths changed — skipping canister deploys."
 
       - name: Setup Node.js
+        if: steps.scope.outputs.backend == 'true' || steps.scope.outputs.frontend == 'true'
         uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
 
       - name: Install dependencies
+        if: steps.scope.outputs.frontend == 'true'
         run: npm ci
 
       - name: Write Vite build env (contact form)
+        if: steps.scope.outputs.frontend == 'true'
         run: |
           umask 077
           cat > .env.production <<EOF
@@ -67,17 +128,21 @@ jobs:
           EOF
 
       - name: Install icp-cli
+        if: steps.scope.outputs.backend == 'true' || steps.scope.outputs.frontend == 'true'
         run: npm install -g @icp-sdk/icp-cli@${{ env.ICP_CLI_VERSION }} @icp-sdk/ic-wasm
 
       - name: Check ICP CLI version
+        if: steps.scope.outputs.backend == 'true' || steps.scope.outputs.frontend == 'true'
         run: icp --version
 
       - name: Setup Rust toolchain
+        if: steps.scope.outputs.backend == 'true'
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: wasm32-unknown-unknown
 
       - name: Import ICP identity
+        if: steps.scope.outputs.backend == 'true' || steps.scope.outputs.frontend == 'true'
         env:
           ICP_IDENTITY_PEM: ${{ secrets.ICP_IDENTITY_PEM }}
         run: |
@@ -92,15 +157,12 @@ jobs:
           rm -f /tmp/icp-identity.pem
           icp identity default "${{ env.ICP_IDENTITY_NAME }}"
 
-      - name: Deploy to ICP
+      - name: Deploy backend canister
+        if: steps.scope.outputs.backend == 'true'
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
         run: |
           set -euo pipefail
-
-          DEPLOY_MODE="${{ github.event.inputs.deploy_mode || vars.ICP_DEPLOY_MODE || 'full' }}"
-          echo "Deploy mode: $DEPLOY_MODE"
-
           echo "Deploying backend canister..."
           icp deploy backend -e ic --identity "${{ env.ICP_IDENTITY_NAME }}"
 
@@ -112,6 +174,13 @@ jobs:
             echo "::warning::OPENROUTER_API_KEY not set — skipping set_api_key (existing stable-memory key is preserved on upgrade)"
           fi
 
+      - name: Deploy portfolio canister
+        if: steps.scope.outputs.frontend == 'true'
+        run: |
+          set -euo pipefail
+          DEPLOY_MODE="${{ github.event.inputs.deploy_mode || vars.ICP_DEPLOY_MODE || 'sync' }}"
+          echo "Portfolio deploy mode: $DEPLOY_MODE"
+
           if [ "$DEPLOY_MODE" = "sync" ]; then
             echo "Syncing portfolio assets (skipping asset canister WASM reinstall)..."
             npm run build -- --mode production
@@ -122,12 +191,18 @@ jobs:
           fi
 
       - name: Verify deployment
+        if: steps.scope.outputs.backend == 'true' || steps.scope.outputs.frontend == 'true'
         run: |
-          icp canister status backend -e ic --identity "${{ env.ICP_IDENTITY_NAME }}"
-          icp canister status portfolio -e ic --identity "${{ env.ICP_IDENTITY_NAME }}"
+          set -euo pipefail
+          if [ "${{ steps.scope.outputs.backend }}" = "true" ]; then
+            icp canister status backend -e ic --identity "${{ env.ICP_IDENTITY_NAME }}"
+          fi
+          if [ "${{ steps.scope.outputs.frontend }}" = "true" ]; then
+            icp canister status portfolio -e ic --identity "${{ env.ICP_IDENTITY_NAME }}"
+          fi
 
       - name: Ensure custom domains are registered
-        if: vars.ICP_CUSTOM_DOMAINS != ''
+        if: steps.scope.outputs.frontend == 'true' && vars.ICP_CUSTOM_DOMAINS != ''
         env:
           DOMAINS: ${{ vars.ICP_CUSTOM_DOMAINS }}
         run: |
@@ -167,7 +242,9 @@ jobs:
           {
             echo "### ICP deployment"
             echo "- **Commit:** \`${{ github.sha }}\`"
-            echo "- **Mode:** \`${{ github.event.inputs.deploy_mode || vars.ICP_DEPLOY_MODE || 'full' }}\`"
+            echo "- **Backend deployed:** \`${{ steps.scope.outputs.backend }}\`"
+            echo "- **Portfolio deployed:** \`${{ steps.scope.outputs.frontend }}\`"
+            echo "- **Portfolio mode:** \`${{ github.event.inputs.deploy_mode || vars.ICP_DEPLOY_MODE || 'sync' }}\`"
             echo "- **Backend:** \`$(jq -r '.backend' .icp/data/mappings/ic.ids.json)\`"
             echo "- **Portfolio:** \`$(jq -r '.portfolio' .icp/data/mappings/ic.ids.json)\`"
             echo "- **Site:** https://aungmyatkyaw.cv"
