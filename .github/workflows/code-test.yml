@@ -1,4 +1,4 @@
-name: Code security scan
+name: Code test
 
 on:
   push:
@@ -10,6 +10,8 @@ on:
       - "Cargo.toml"
       - "Cargo.lock"
       - ".github/workflows/code-test.yml"
+      - ".github/dependabot.yml"
+      - "vite.config.js"
   pull_request:
     branches: [main]
     paths:
@@ -19,6 +21,8 @@ on:
       - "Cargo.toml"
       - "Cargo.lock"
       - ".github/workflows/code-test.yml"
+      - ".github/dependabot.yml"
+      - "vite.config.js"
   workflow_dispatch:
 
 concurrency:
@@ -26,6 +30,27 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  frontend-check:
+    name: npm ci & build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ vars.NODE_VERSION || '22' }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build frontend
+        run: npm run build
+
   trivy-scan:
     name: Trivy dependency scan
     runs-on: ubuntu-latest

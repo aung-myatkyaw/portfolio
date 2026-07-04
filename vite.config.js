@@ -12,20 +12,24 @@ export default defineConfig({
     compression({ algorithm: 'brotliCompress', exclude: [/\.(br)$/, /\.(gz)$/] }),
   ],
   build: {
-    rollupOptions: {
+    rolldownOptions: {
       output: {
-        manualChunks: {
-          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
-          'vendor-motion': ['framer-motion'],
-          'vendor-icons': ['react-icons'],
-          'vendor-emailjs': ['@emailjs/browser'],
-          'vendor-turnstile': ['@marsidev/react-turnstile'],
-          'vendor-observer': ['react-intersection-observer'],
-          'vendor-icp': ['@dfinity/agent', '@dfinity/candid', '@dfinity/principal', '@icp-sdk/core'],
+        codeSplitting: {
+          groups: [
+            {
+              name: 'vendor-react',
+              test: /node_modules\/(react|react-dom|react-router(-dom)?)\//,
+            },
+            { name: 'vendor-motion', test: /node_modules\/framer-motion\// },
+            { name: 'vendor-icons', test: /node_modules\/react-icons\// },
+            { name: 'vendor-emailjs', test: /node_modules\/@emailjs\/browser\// },
+            { name: 'vendor-turnstile', test: /node_modules\/@marsidev\/react-turnstile\// },
+            { name: 'vendor-observer', test: /node_modules\/react-intersection-observer\// },
+            { name: 'vendor-icp', test: /node_modules\/(@dfinity\/|@icp-sdk\/)/ },
+          ],
         },
       },
     },
-    // Warn at 500kB, hard limit at 1MB
     chunkSizeWarningLimit: 500,
   },
 })
