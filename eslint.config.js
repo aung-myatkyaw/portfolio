@@ -7,7 +7,7 @@ import reactRefresh from 'eslint-plugin-react-refresh'
 export default [
   { ignores: ['dist', '.icp/cache/**'] },
   {
-    files: ['tailwind.config.js', 'postcss.config.js'],
+    files: ['tailwind.config.js'],
     languageOptions: {
       globals: { ...globals.node, require: 'readonly' },
     },
