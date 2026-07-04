@@ -13,13 +13,25 @@ updates:
           - "vite-plugin-*"
       react-ecosystem:
         patterns:
-          - "react"
-          - "react-dom"
-          - "react-router-dom"
-          - "@types/react"
-          - "@types/react-dom"
+          - "react*"
+          - "@types/react*"
+      frontend-deps:
+        patterns:
+          - "tailwindcss"
+          - "@tailwindcss/*"
+          - "autoprefixer"
+          - "postcss"
+          - "framer-motion"
+          - "@marsidev/*"
+          - "@fontsource/*"
+          - "@emailjs/*"
+      icp-sdk:
+        patterns:
+          - "@icp-sdk/*"
+          - "@dfinity/*"
       dev-tools:
         patterns:
           - "eslint"
           - "@eslint/*"
           - "eslint-plugin-*"
+          - "globals"
