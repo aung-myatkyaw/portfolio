@@ -41,6 +41,9 @@
     "vite-plugin-compression2": "^2.5.3"
   },
   "overrides": {
+    "eslint-plugin-react": {
+      "eslint": "$eslint"
+    },
     "micromatch": {
       "picomatch": "2.3.2"
     },
