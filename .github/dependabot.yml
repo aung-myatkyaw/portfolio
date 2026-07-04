@@ -35,3 +35,13 @@ updates:
           - "@eslint/*"
           - "eslint-plugin-*"
           - "globals"
+  - package-ecosystem: cargo
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 3
+    groups:
+      icp-rust:
+        patterns:
+          - "ic-cdk*"
+          - "candid"
