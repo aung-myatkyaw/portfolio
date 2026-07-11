@@ -145,6 +145,32 @@ const diagrams = [
     },
   },
   {
+    id: 'matrixlink',
+    title: 'MatrixLink Control Plane',
+    description: 'Next.js portal and FastAPI API provisioning Outline keys across a server fleet.',
+    liveUrl: 'https://portal.matrixlink.in',
+    nodes: [
+      { id: 'portal', label: 'Next.js', x: 10, y: 50 },
+      { id: 'api', label: 'FastAPI', x: 100, y: 50, active: true },
+      { id: 'db', label: 'Postgres', x: 190, y: 20 },
+      { id: 'outline', label: 'Outline Fleet', x: 190, y: 80 },
+      { id: 'pay', label: 'NOWPayments', x: 280, y: 50 },
+    ],
+    edges: [
+      [82, 64, 100, 64],
+      [172, 50, 190, 34],
+      [172, 64, 190, 80],
+      [172, 64, 280, 64],
+    ],
+    tooltips: {
+      portal: 'Static Next.js portal — plans, wallet, admin, EN/MY i18n',
+      api: 'Async FastAPI — auth, billing webhooks, key lifecycle jobs',
+      db: 'PostgreSQL for users, credits, servers, and audit logs',
+      outline: 'Multi-server Outline fleet with capacity and least-loaded assignment',
+      pay: 'Crypto top-ups via NOWPayments IPN webhooks',
+    },
+  },
+  {
     id: 'icp',
     title: 'This Portfolio on ICP',
     description: 'Static frontend on ICP asset canister with Rust backend making HTTPS outcalls.',
@@ -225,15 +251,29 @@ const ArchitectureDiagram = ({ diagram }) => {
           />
         ))}
       </svg>
-      {diagram.repoUrl && (
-        <a
-          href={diagram.repoUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 mt-3 text-[11px] font-mono text-primary-600 dark:text-primary-400 hover:underline"
-        >
-          View source on GitHub ↗
-        </a>
+      {(diagram.repoUrl || diagram.liveUrl) && (
+        <div className="flex flex-wrap gap-3 mt-3">
+          {diagram.liveUrl && (
+            <a
+              href={diagram.liveUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 text-[11px] font-mono text-primary-600 dark:text-primary-400 hover:underline"
+            >
+              Live product ↗
+            </a>
+          )}
+          {diagram.repoUrl && (
+            <a
+              href={diagram.repoUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 text-[11px] font-mono text-primary-600 dark:text-primary-400 hover:underline"
+            >
+              View source on GitHub ↗
+            </a>
+          )}
+        </div>
       )}
     </div>
   );
@@ -248,6 +288,7 @@ ArchitectureDiagram.propTypes = {
     edges: PropTypes.array.isRequired,
     tooltips: PropTypes.object.isRequired,
     repoUrl: PropTypes.string,
+    liveUrl: PropTypes.string,
   }).isRequired,
 };
 

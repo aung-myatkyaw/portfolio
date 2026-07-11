@@ -156,18 +156,36 @@ Primary focus: CI/CD, automation, and delivering projects to production. Comfort
 - Learn DevOps: Docker, Kubernetes, Terraform and Azure DevOps — Udemy
 - Preparing for Google Cloud Certification: Cloud DevOps Engineer — Coursera
 
+## Selected Work — MatrixLink (Founder / full-stack, Mar 2026 – Present)
+
+Credit-prepaid Outline VPN marketplace and multi-server control plane. Aung designed, built, deployed, and operates the product end-to-end.
+
+Product: users buy plans with a credit wallet, receive Outline-compatible (`ss://`) access keys, and track usage/expiry. Admins register Outline servers, set pricing and capacity, and manage users/keys. Live portal: portal.matrixlink.in. Support cue: support@matrixlink.in.
+
+Stack: Next.js portal (static export) + React; FastAPI + SQLAlchemy async + PostgreSQL; JWT/bcrypt and Google OAuth; NOWPayments crypto top-ups (IPN webhooks — crypto is payment rails only, not web3/DeFi); AWS Lightsail (API), ECR, S3 + CloudFront (portal); GitHub Actions with Trivy; English + Burmese i18n.
+
+Highlights to mention:
+- Multi-server Outline orchestration: capacity caps, least-loaded purchase assignment, live metrics, expired-key cleanup jobs
+- Credits wallet, pricing tiers, purchase UX, referral bonuses on qualified top-ups
+- Admin: users, servers, pricing, keys, capacity, audit logs, referrals
+- Production deploy path (not a localhost-only demo)
+
+Framing: lead with systems / SaaS / fleet control plane. Soft-pedal circumvention marketing and crypto-as-web3 narratives. If asked about the VPN niche: Outline-compatible access product with published terms/privacy; not a hacking tool. Do not claim high automated test coverage or a public monorepo clone without infra secrets.
+
 ## Portfolio Highlights (this site)
 
 - Deployed as asset + Rust canisters on Internet Computer (ICP) with custom domain aungmyatkyaw.cv
 - AI "Ask About Me" agent: Rust backend canister making HTTPS outcalls to OpenRouter (LLaMA 3.1 8B)
 - Security: rate limiting, prompt injection guard, CSP and security headers, Cloudflare Turnstile anti-spam, honeypot on contact form
 - Built with React, Vite, Tailwind CSS; Brotli/Gzip compression and vendor chunk splitting
+- Selected work: MatrixLink control plane featured on the home page with architecture diagram
 
 ## Common Recruiter Topics
 
 - Agentic AI infra: designs secure multicloud K8s platforms for AI workloads, embeds security scanning in CI/CD, orchestrates GPU/AI containers
 - Platform ownership at General Magic: sole engineer for 50+ Terraform projects, dev/prod EKS, LiteLLM gateway, Istio mesh, Frappe ERPNext/HRMS on Kubernetes, and full observability stack
+- MatrixLink: founder-built production SaaS — Outline fleet control plane, credits/billing webhooks, FastAPI + Next.js, AWS CI/CD
 - DevSecOps strength: CKS + CKA + AWS SysOps; hands-on with GitLab/GitHub CI, SonarQube, vulnerability scanning, IAM/network security
 - Banking experience: Yoma Bank microservices CI/CD at scale in a regulated environment
 - Delivery-focused engineer: involved with many stacks (Java, Angular, Vue, Node, Python, Rust, Go) but centered on CI/CD and getting projects to production — understands dev teams without being a primary app developer
-- Full-stack origin: early C#/Angular at Global Wave, then DevOps delivery across banking, logistics, and AI platform work at GMT
+- Full-stack origin: early C#/Angular at Global Wave, then DevOps delivery across banking, logistics, and AI platform work at GMT; also ships full products (MatrixLink) when owning end-to-end
