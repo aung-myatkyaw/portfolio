@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { FaGithub, FaLinkedin, FaGitlab } from 'react-icons/fa';
 import { getHomeExperienceTagline } from '../lib/career';
 import TerminalHero from './TerminalHero';
+import SelectedWork from './SelectedWork';
 import ArchitectureShowcase from './ArchitectureShowcase';
 
 const Home = () => {
@@ -126,6 +127,7 @@ const Home = () => {
         </div>
       </div>
       </div>
+      <SelectedWork />
       <ArchitectureShowcase />
     </>
   );
