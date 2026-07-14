@@ -13,7 +13,7 @@
     "@dfinity/agent": "^3.4.3",
     "@emailjs/browser": "^4.4.1",
     "@fontsource/jetbrains-mono": "^5.2.8",
-    "@icp-sdk/core": "^5.4.0",
+    "@icp-sdk/core": "^6.0.0",
     "@marsidev/react-turnstile": "^1.5.3",
     "@tailwindcss/typography": "^0.5.20",
     "@tailwindcss/vite": "^4.3.2",
