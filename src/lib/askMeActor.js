@@ -1,4 +1,4 @@
-import { HttpAgent, Actor } from '@dfinity/agent';
+import { HttpAgent, Actor } from '@icp-sdk/core/agent';
 import { safeGetCanisterEnv } from '@icp-sdk/core/agent/canister-env';
 
 /** icp-cli injects PUBLIC_CANISTER_ID:backend at deploy time; asset canister exposes it via ic_env cookie. */
