@@ -27,7 +27,7 @@ export default defineConfig({
             { name: 'vendor-emailjs', test: /node_modules\/@emailjs\/browser\// },
             { name: 'vendor-turnstile', test: /node_modules\/@marsidev\/react-turnstile\// },
             { name: 'vendor-observer', test: /node_modules\/react-intersection-observer\// },
-            { name: 'vendor-icp', test: /node_modules\/(@dfinity\/|@icp-sdk\/)/ },
+            { name: 'vendor-icp', test: /node_modules\/@icp-sdk\// },
           ],
         },
       },

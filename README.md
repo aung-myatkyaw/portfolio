@@ -47,7 +47,7 @@ A modern, responsive portfolio website for a Senior DevSecOps Engineer, featurin
 | Email | EmailJS (`@emailjs/browser`) |
 | Anti-spam | Cloudflare Turnstile + Honeypot |
 | Icons | React Icons |
-| AI Agent (frontend) | `@dfinity/agent` — calls Rust backend canister |
+| AI Agent (frontend) | `@icp-sdk/core` — calls Rust backend canister |
 | AI Agent (backend) | Rust canister on ICP, non-replicated HTTPS outcalls to OpenRouter |
 | AI Model | `meta-llama/llama-3.1-8b-instruct` via OpenRouter |
 | Deployment | Internet Computer (ICP) — ICP CLI |
@@ -207,7 +207,7 @@ icp canister status backend -e ic
 
 ```
 Browser (React)
-  └── @dfinity/agent
+  └── @icp-sdk/core/agent
         └── ICP backend canister (Rust) — 2h2bb-wiaaa-aaaal-qwnna-cai
               └── non-replicated HTTPS outcall → openrouter.ai/api/v1/chat/completions
                     └── meta-llama/llama-3.1-8b-instruct
