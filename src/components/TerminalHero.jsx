@@ -7,7 +7,7 @@ const SESSION_KEY = 'hero-terminal-seen';
 const TERMINAL_BLOCKS = [
   { command: 'whoami', output: 'aung-myat-kyaw' },
   { command: 'cat role.txt', output: 'Senior DevSecOps Engineer · Bangkok, TH' },
-  { command: 'kubectl get certs', output: 'CKS (valid)  CKA (valid)  AWS-SysOps (valid)' },
+  { command: 'kubectl get certs', output: 'CKS (valid)  CKA (valid)  AWS-DevOps-Pro (valid)  AWS-SysOps (valid)' },
   {
     command: 'echo $FOCUS',
     output:

@@ -144,9 +144,10 @@ Primary focus: CI/CD, automation, and delivering projects to production. Comfort
 
 ## Certifications & Achievements
 
+- AWS Certified DevOps Engineer – Professional — Amazon Web Services (2026) — https://bit.ly/4yh5f27
 - Certified Kubernetes Security Specialist (CKS) — The Linux Foundation
 - Certified Kubernetes Administrator (CKA) — The Linux Foundation
-- AWS Certified SysOps Administrator – Associate — Amazon Web Services (Dec 2024)
+- AWS Certified SysOps Administrator – Associate — Amazon Web Services (Dec 2024) — https://bit.ly/4gavwWl
 - DevSecOps: Kubernetes DevOps & Security — KodeKloud
 - GitLab CI/CD: Architecting, Deploying, and Optimizing Pipelines — KodeKloud
 - Istio by Solo.io Certifications — Credly
@@ -185,7 +186,7 @@ Framing: lead with systems / SaaS / fleet control plane. Soft-pedal circumventio
 - Agentic AI infra: designs secure multicloud K8s platforms for AI workloads, embeds security scanning in CI/CD, orchestrates GPU/AI containers
 - Platform ownership at General Magic: sole engineer for 50+ Terraform projects, dev/prod EKS, LiteLLM gateway, Istio mesh, Frappe ERPNext/HRMS on Kubernetes, and full observability stack
 - MatrixLink: founder-built production SaaS — Outline fleet control plane, credits/billing webhooks, FastAPI + Next.js, AWS CI/CD
-- DevSecOps strength: CKS + CKA + AWS SysOps; hands-on with GitLab/GitHub CI, SonarQube, vulnerability scanning, IAM/network security
+- DevSecOps strength: CKS + CKA + AWS DevOps Engineer Professional + AWS SysOps; hands-on with GitLab/GitHub CI, SonarQube, vulnerability scanning, IAM/network security
 - Banking experience: Yoma Bank microservices CI/CD at scale in a regulated environment
 - Delivery-focused engineer: involved with many stacks (Java, Angular, Vue, Node, Python, Rust, Go) but centered on CI/CD and getting projects to production — understands dev teams without being a primary app developer
 - Full-stack origin: early C#/Angular at Global Wave, then DevOps delivery across banking, logistics, and AI platform work at GMT; also ships full products (MatrixLink) when owning end-to-end

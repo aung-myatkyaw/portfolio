@@ -19,7 +19,7 @@ const skillCategories = [
     description: 'Multicloud IaC, EKS platform engineering, API Gateway, and Frappe ERPNext/HRMS on Kubernetes.',
     skills: [
       { name: 'Kubernetes', hint: 'EKS dev/prod, Karpenter, GPU nodes, Istio mesh' },
-      { name: 'AWS', hint: 'EKS, IAM, multi-region VPCs, API Gateway' },
+      { name: 'AWS', hint: 'EKS, IAM, multi-region VPCs, API Gateway — DevOps Engineer Professional' },
       { name: 'GCP', hint: 'GKE, Cloud Skills Boost' },
       { name: 'Azure', hint: 'AKS, Azure DevOps pipelines' },
       { name: 'DigitalOcean', hint: 'Droplets, managed Kubernetes, DNS' },
