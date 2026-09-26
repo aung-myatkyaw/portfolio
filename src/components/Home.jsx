@@ -57,7 +57,7 @@ const Home = () => {
                   Senior DevSecOps Engineer
                 </p>
                 <p className="metric-strip mb-4">
-                  CKS &bull; CKA &bull; AWS SysOps &bull; {getHomeExperienceTagline()}
+                  CKS &bull; CKA &bull; AWS DevOps Pro &bull; AWS SysOps &bull; {getHomeExperienceTagline()}
                 </p>
               </motion.div>
             </motion.div>

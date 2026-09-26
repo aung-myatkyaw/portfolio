@@ -102,7 +102,7 @@ const About = () => {
     visible: { y: 0, opacity: 1, transition: { duration: 0.4 } },
   };
 
-  const certDescription = `CKS, CKA, and AWS Certified SysOps Administrator with ${experienceLabel} years of hands-on industry experience across cloud platforms`;
+  const certDescription = `CKS, CKA, AWS Certified DevOps Engineer – Professional, and AWS Certified SysOps Administrator with ${experienceLabel} years of hands-on industry experience across cloud platforms`;
 
   const metrics = [
     { label: 'Experience', value: `${experienceLabel} yrs`, mono: getCareerRangeLabel() },
