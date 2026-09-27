@@ -24,7 +24,7 @@ A modern, responsive portfolio website for a Senior DevSecOps Engineer, featurin
 - Contact form with EmailJS, Cloudflare Turnstile anti-spam, and honeypot protection
 - **AI "Ask About Me" agent** embedded in the Contact page:
   - Rust backend canister on ICP making non-replicated HTTPS outcalls to OpenRouter
-  - `meta-llama/llama-3.1-8b-instruct` with factual, short responses
+  - `google/gemini-2.5-flash-lite`, with `meta-llama/llama-3.1-8b-instruct` as fallback
   - Global rate limiter (30 calls / 5 min) to prevent cycle drain attacks
   - Prompt injection guard (22-pattern blocklist)
   - API key persisted to stable memory across canister upgrades
@@ -49,7 +49,7 @@ A modern, responsive portfolio website for a Senior DevSecOps Engineer, featurin
 | Icons | React Icons |
 | AI Agent (frontend) | `@icp-sdk/core` — calls Rust backend canister |
 | AI Agent (backend) | Rust canister on ICP, non-replicated HTTPS outcalls to OpenRouter |
-| AI Model | `meta-llama/llama-3.1-8b-instruct` via OpenRouter |
+| AI Model | `google/gemini-2.5-flash-lite` via OpenRouter (Llama 3.1 8B fallback) |
 | Deployment | Internet Computer (ICP) — ICP CLI |
 | Compression | vite-plugin-compression2 (Brotli + Gzip) |
 
@@ -210,7 +210,7 @@ Browser (React)
   └── @icp-sdk/core/agent
         └── ICP backend canister (Rust) — 2h2bb-wiaaa-aaaal-qwnna-cai
               └── non-replicated HTTPS outcall → openrouter.ai/api/v1/chat/completions
-                    └── meta-llama/llama-3.1-8b-instruct
+                    └── google/gemini-2.5-flash-lite (fallback: llama-3.1-8b-instruct)
 ```
 
 ### Security measures on the backend canister

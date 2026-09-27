@@ -38,7 +38,7 @@ Sole platform engineer for organization-wide infrastructure — architecting sec
 
 Key responsibilities and achievements:
 - Own organization-wide IaC monorepo spanning 50+ isolated Terraform projects with remote state (S3 + DynamoDB), KMS-encrypted secrets workflow, and shared networking/IAM across multiple AWS regions (including Singapore and Thailand).
-- Operate dev and production EKS clusters hosting dozens of internal product workloads — Istio service mesh, cert-manager TLS, Karpenter node provisioning, Rancher multi-cluster management, and GPU nodes for AI workloads.
+- Operate multiple EKS clusters hosting dozens of internal product workloads — Istio service mesh, cert-manager TLS, Karpenter node provisioning, Rancher multi-cluster management, and GPU nodes for AI workloads.
 - Deployed LiteLLM multi-provider AI gateway on Kubernetes; operate workflow orchestration (Hatchet, n8n) for AI/agent pipelines; support GPU-backed workloads via KubeRay/Ray.
 - Built full observability stack: Prometheus, Grafana, Loki, AlertManager, and Jaeger distributed tracing for cluster and application monitoring.
 - Deploy and operate Frappe ERPNext with HRMS on EKS via custom Helm charts — multi-service architecture (Nginx, Gunicorn, Socket.IO, background workers), custom container images with pre-built bench apps, Kubernetes site-provisioning jobs, migrations, and custom Frappe module deployment on dedicated namespaces.
@@ -70,32 +70,32 @@ Technologies: C#, .NET Core, Xamarin, TypeScript, Angular, MySQL, Docker
 
 ### Cloud & Infrastructure (strongest)
 
-- Kubernetes — expert
-- AWS — expert
-- Docker — expert
-- Google Cloud Platform (GCP) — advanced
-- Microsoft Azure — advanced
-- DigitalOcean — experienced
-- Terraform — advanced
-- Rancher — advanced
+- Kubernetes — expert (multiple EKS clusters, Karpenter, GPU nodes, Istio mesh)
+- AWS — expert (EKS, IAM, multi-region VPCs, API Gateway — DevOps Engineer Professional)
+- Docker — expert (containerized microservices and AI apps)
+- Google Cloud Platform (GCP) — advanced (GKE, Cloud Skills Boost)
+- Microsoft Azure — advanced (AKS, Azure DevOps pipelines)
+- DigitalOcean — experienced (Droplets, managed Kubernetes, DNS)
+- Terraform — advanced (50+ isolated projects, remote state, KMS secrets)
+- Rancher — advanced (multi-cluster management)
 - Helm, Karpenter, Istio, cert-manager — experienced
 - API Gateway, Cloudflare — experienced
 - Frappe / ERPNext / HRMS on Kubernetes — experienced
 
 ### DevOps & CI/CD
 
-- GitLab CI/CD — expert
-- GitHub Actions — expert
-- Jenkins — advanced
+- GitLab CI/CD — expert (banking microservices lifecycle)
+- GitHub Actions — expert (security scanning in CI at General Magic)
+- Jenkins — advanced (legacy pipeline maintenance, not the preferred CI system)
 - Azure DevOps — advanced
-- Helm Charts — advanced
-- ArgoCD — advanced
+- Helm Charts — advanced (Frappe ERPNext/HRMS charts on EKS)
+- ArgoCD — advanced (Frappe ERPNext/HRMS charts on EKS)
 
 ### Security & Monitoring
 
 - DevSecOps — expert
-- Istio / Service Mesh — advanced
-- Prometheus & Grafana — advanced
+- Istio / Service Mesh — advanced (Gateway, VirtualService, mTLS on EKS)
+- Prometheus & Grafana — advanced (EKS monitoring stack, SLO dashboards)
 - Loki & Jaeger — experienced
 - Vulnerability Scanning — advanced
 - IAM & Network Security — advanced
@@ -174,10 +174,30 @@ Highlights to mention:
 
 Framing: lead with systems / SaaS / fleet control plane. Soft-pedal circumvention marketing and crypto-as-web3 narratives. If asked about the VPN niche: Outline-compatible access product with published terms/privacy; not a hacking tool. Do not claim high automated test coverage or a public monorepo clone without infra secrets.
 
+## Systems
+
+Short paths a visitor can ask about. Describe them in prose. Do not invent hostnames, cluster names, or account IDs.
+
+### AI workload on Kubernetes
+
+Traffic enters through Ingress (TLS termination and routing at the edge), then Istio (mTLS, traffic policies, and mesh observability), then LiteLLM (multi-provider LLM proxy with rate limiting), then Hatchet (workflow orchestration for AI and agent pipelines). GPU nodes run GPU workload orchestration via Karpenter on EKS. Jaeger provides distributed tracing across AI pipeline services. Prometheus provides metrics, alerts, and SLO dashboards.
+
+### ERPNext on Kubernetes
+
+Istio terminates TLS and routes through the service mesh gateway to Nginx (static assets and reverse proxy), then ERPNext (Gunicorn app servers with HPA and custom bench apps) and the HRMS module (custom Frappe extensions on EKS). Workers run background jobs for queues and scheduled tasks. MariaDB stores data on persistent volumes with SSL. Redis handles cache, sessions, and Socket.IO pub/sub.
+
+### MatrixLink control plane
+
+The Next.js portal is a static site for plans, wallet, admin, and English/Burmese. FastAPI (async) handles auth, billing webhooks, and key lifecycle jobs. PostgreSQL stores users, credits, servers, and audit logs. The Outline fleet is multi-server, with capacity caps and least-loaded assignment. NOWPayments handles crypto top-ups through IPN webhooks. Live portal: portal.matrixlink.in.
+
+### This portfolio on ICP
+
+The browser loads a React SPA from an ICP asset canister (Brotli-compressed static assets). Ask AI calls a Rust canister that rate-limits requests and checks for prompt injection, then makes an HTTPS outcall to OpenRouter. The primary model is Gemini 2.5 Flash Lite; Llama 3.1 8B is the fallback if Flash Lite errors. Recent questions in the open chat are sent with the request. Nothing from the chat is stored on-chain.
+
 ## Portfolio Highlights (this site)
 
 - Deployed as asset + Rust canisters on Internet Computer (ICP) with custom domain aungmyatkyaw.cv
-- AI "Ask About Me" agent: Rust backend canister making HTTPS outcalls to OpenRouter (LLaMA 3.1 8B)
+- AI "Ask About Me" agent: Rust backend canister making HTTPS outcalls to OpenRouter (Gemini 2.5 Flash Lite, with Llama 3.1 8B as fallback)
 - Security: rate limiting, prompt injection guard, CSP and security headers, Cloudflare Turnstile anti-spam, honeypot on contact form
 - Built with React, Vite, Tailwind CSS; Brotli/Gzip compression and vendor chunk splitting
 - Selected work: MatrixLink control plane featured on the home page with architecture diagram
@@ -185,7 +205,7 @@ Framing: lead with systems / SaaS / fleet control plane. Soft-pedal circumventio
 ## Common Recruiter Topics
 
 - Agentic AI infra: designs secure multicloud K8s platforms for AI workloads, embeds security scanning in CI/CD, orchestrates GPU/AI containers
-- Platform ownership at General Magic: sole engineer for 50+ Terraform projects, dev/prod EKS, LiteLLM gateway, Istio mesh, Frappe ERPNext/HRMS on Kubernetes, and full observability stack
+- Platform ownership at General Magic: sole engineer for 50+ Terraform projects, multiple EKS clusters, LiteLLM gateway, Istio mesh, Frappe ERPNext/HRMS on Kubernetes, and full observability stack
 - MatrixLink: founder-built production SaaS — Outline fleet control plane, credits/billing webhooks, FastAPI + Next.js, AWS CI/CD
 - DevSecOps strength: CKS + CKA + AWS DevOps Engineer Professional + AWS SysOps; hands-on with GitLab/GitHub CI, SonarQube, vulnerability scanning, IAM/network security
 - Banking experience: Yoma Bank microservices CI/CD at scale in a regulated environment

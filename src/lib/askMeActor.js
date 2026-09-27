@@ -13,10 +13,29 @@ export function getBackendCanisterId() {
 
 const idlFactory = ({ IDL }) => {
   const AskResult = IDL.Variant({ Ok: IDL.Text, Err: IDL.Text });
+  const ChatTurn = IDL.Record({ role: IDL.Text, content: IDL.Text });
   return IDL.Service({
-    ask_about_me: IDL.Func([IDL.Text], [AskResult], []),
+    ask_about_me: IDL.Func([IDL.Text, IDL.Vec(ChatTurn)], [AskResult], []),
   });
 };
+
+/** Last 3 user/assistant pairs, matching the canister cap. */
+export const HISTORY_MAX_TURNS = 6;
+export const HISTORY_CHAR_CAP = 500;
+
+export function historyForRequest(messages) {
+  const turns = messages.filter(
+    (message) =>
+      (message.role === 'user' || message.role === 'assistant') &&
+      !message.excludeFromHistory &&
+      typeof message.content === 'string' &&
+      message.content.trim()
+  );
+  return turns.slice(-HISTORY_MAX_TURNS).map((message) => ({
+    role: message.role,
+    content: message.content.trim().slice(0, HISTORY_CHAR_CAP),
+  }));
+}
 
 let actorCache = null;
 let actorCanisterId = null;
@@ -61,6 +80,7 @@ export const SUGGESTED_QUESTIONS = [
 
 export const WELCOME_MESSAGE = {
   role: 'assistant',
+  excludeFromHistory: true,
   content:
-    "Hi! Ask one question at a time about Aung's experience, skills, or certifications. Each answer is independent — no memory between messages.",
+    "Hi! Ask about Aung's experience, skills, or certifications. This chat remembers your recent questions; nothing is stored on-chain.",
 };

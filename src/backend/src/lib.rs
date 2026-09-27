@@ -16,8 +16,12 @@ const RATE_LIMIT_WINDOW_NS: u64 = 300_000_000_000; // 5 minutes in nanoseconds
 const RATE_LIMIT_MAX_CALLS: u32 = 30;
 const CACHE_MAX: usize = 64;
 const OPENROUTER_URL: &str = "https://openrouter.ai/api/v1/chat/completions";
-const LLM_MODEL: &str = "meta-llama/llama-3.1-8b-instruct";
-// Billing uses max_response_bytes, not actual size — keep tight for short answers.
+const LLM_MODEL: &str = "google/gemini-2.5-flash-lite";
+const LLM_FALLBACK: &str = "meta-llama/llama-3.1-8b-instruct";
+// Last 3 user/assistant pairs. Each turn is capped so a caller cannot inflate the prompt.
+const HISTORY_MAX_TURNS: usize = 6;
+const HISTORY_MAX_CHARS: usize = 500;
+// Billing uses max_response_bytes, not actual size — keep the cap so cycle cost stays flat.
 const MAX_RESPONSE_BYTES: u64 = 8_192;
 
 thread_local! {
@@ -79,6 +83,13 @@ enum AskResult {
     Err(String),
 }
 
+/// One prior turn from the browser. Not written to stable memory.
+#[derive(CandidType, Deserialize, Clone)]
+struct ChatTurn {
+    role: String,
+    content: String,
+}
+
 #[derive(Serialize)]
 struct ChatMessage {
     role: String,
@@ -86,19 +97,26 @@ struct ChatMessage {
 }
 
 #[derive(Serialize)]
+struct MaxPrice {
+    prompt: f64,
+    completion: f64,
+}
+
+#[derive(Serialize)]
 struct Provider {
     allow_fallbacks: bool,
+    sort: String,
+    max_price: MaxPrice,
     require_parameters: bool,
 }
 
 #[derive(Serialize)]
 struct ChatRequest {
     model: String,
+    models: Vec<String>,
     messages: Vec<ChatMessage>,
     max_tokens: u32,
     temperature: f32,
-    seed: i32,
-    top_p: f32,
     provider: Provider,
 }
 
@@ -129,7 +147,8 @@ Guardrails:\n\
 \n\
 Tone: Confident, concise, and professional.\n\
 - Simple factual questions: one short sentence in plain English.\n\
-- Broader questions: at most 2 short sentences. Lead with the most relevant fact. Never exceed 2 sentences.";
+- Broader questions: at most 4 short sentences. Lead with the most relevant fact.\n\
+- When the visitor refers to something already discussed (\"that\", \"his certs\", \"the previous one\"), use the prior turns in this chat.";
 
 const PROFILE_TEMPLATE: &str = include_str!("../profile.md");
 
@@ -148,8 +167,9 @@ fn build_system_prompt() -> String {
 // ---------------------------------------------------------------------------
 
 /// Ask a question about Aung's professional profile.
+/// `history` is the recent browser thread only; it is not stored on-chain.
 #[ic_cdk::update]
-async fn ask_about_me(question: String) -> AskResult {
+async fn ask_about_me(question: String, history: Vec<ChatTurn>) -> AskResult {
     let api_key = API_KEY.with(|k| k.borrow().clone());
 
     if api_key.is_empty() {
@@ -189,36 +209,50 @@ async fn ask_about_me(question: String) -> AskResult {
 
     // --- Prompt injection guard ---
     let q_lower = question.to_lowercase();
-    if INJECTION_PATTERNS.iter().any(|p| q_lower.contains(p)) {
+    if contains_injection(&q_lower) {
         return AskResult::Err("Your message was flagged as a potential prompt injection attempt.".to_string());
     }
 
-    let cache_key = q_lower.clone();
+    let history = match normalize_history(history) {
+        Ok(turns) => turns,
+        Err(msg) => return AskResult::Err(msg),
+    };
+
+    let cache_key = history_cache_key(&q_lower, &history);
     if let Some(cached) = cache_get(&cache_key) {
         return AskResult::Ok(cached);
     }
 
-    let seed = stable_hash_i32(&question);
+    let mut messages = vec![ChatMessage {
+        role: "system".to_string(),
+        content: build_system_prompt(),
+    }];
+    for turn in &history {
+        messages.push(ChatMessage {
+            role: turn.role.clone(),
+            content: turn.content.clone(),
+        });
+    }
+    messages.push(ChatMessage {
+        role: "user".to_string(),
+        content: question,
+    });
+
     let body = ChatRequest {
         model: LLM_MODEL.to_string(),
-        messages: vec![
-            ChatMessage {
-                role: "system".to_string(),
-                content: build_system_prompt(),
-            },
-            ChatMessage {
-                role: "user".to_string(),
-                content: question,
-            },
-        ],
-        // 120 tokens — enough for two full sentences; 60 was truncating broader answers mid-word.
-        max_tokens: 120,
+        models: vec![LLM_MODEL.to_string(), LLM_FALLBACK.to_string()],
+        messages,
+        // 320 tokens — room for up to four sentences. The 8KB response cap is unchanged.
+        max_tokens: 320,
         temperature: 0.0,
-        seed,
-        top_p: 0.0001,
         provider: Provider {
-            allow_fallbacks: false,
-            require_parameters: true,
+            allow_fallbacks: true,
+            sort: "price".to_string(),
+            max_price: MaxPrice {
+                prompt: 0.10,
+                completion: 0.40,
+            },
+            require_parameters: false,
         },
     };
 
@@ -298,14 +332,62 @@ async fn http_post_json(
     Ok(response.body)
 }
 
-/// Stable 32-bit seed derived from the question for reproducible LLM output.
-fn stable_hash_i32(text: &str) -> i32 {
-    let mut hash: u32 = 0x811c9dc5;
-    for byte in text.bytes() {
-        hash ^= u32::from(byte);
-        hash = hash.wrapping_mul(0x01000193);
+fn contains_injection(text: &str) -> bool {
+    let lower = text.to_lowercase();
+    INJECTION_PATTERNS.iter().any(|p| lower.contains(p))
+}
+
+fn truncate_chars(text: &str, max_chars: usize) -> String {
+    if text.chars().count() <= max_chars {
+        text.to_string()
+    } else {
+        text.chars().take(max_chars).collect()
     }
-    (hash & 0x7fffffff) as i32
+}
+
+/// Keep the last few user/assistant turns. Anything else is dropped so a caller
+/// cannot inject a system message. Injection phrases still reject the request.
+fn normalize_history(history: Vec<ChatTurn>) -> Result<Vec<ChatTurn>, String> {
+    for turn in &history {
+        if contains_injection(&turn.role) || contains_injection(&turn.content) {
+            return Err(
+                "Your message was flagged as a potential prompt injection attempt.".to_string(),
+            );
+        }
+    }
+
+    let mut turns: Vec<ChatTurn> = history
+        .into_iter()
+        .filter_map(|turn| {
+            let role = turn.role.trim().to_lowercase();
+            if role != "user" && role != "assistant" {
+                return None;
+            }
+            let content = truncate_chars(turn.content.trim(), HISTORY_MAX_CHARS);
+            if content.is_empty() {
+                return None;
+            }
+            Some(ChatTurn { role, content })
+        })
+        .collect();
+
+    if turns.len() > HISTORY_MAX_TURNS {
+        let drop_count = turns.len() - HISTORY_MAX_TURNS;
+        turns.drain(0..drop_count);
+    }
+
+    Ok(turns)
+}
+
+fn history_cache_key(question_lower: &str, history: &[ChatTurn]) -> String {
+    let mut key = String::from(question_lower);
+    for turn in history {
+        key.push('\n');
+        key.push_str(&turn.role);
+        key.push('\n');
+        key.push_str(&turn.content.to_lowercase());
+    }
+    key
 }
 
 fn cache_get(key: &str) -> Option<String> {
