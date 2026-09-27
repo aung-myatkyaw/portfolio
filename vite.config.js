@@ -2,7 +2,7 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { compression } from 'vite-plugin-compression2'
-import { RESUME_FILENAME, RESUME_PATH } from './src/lib/resume.js'
+import { RESUME_PATH, RESUME_URL } from './src/lib/resume.js'
 
 const resumeDownloadHeaders = () => ({
   name: 'resume-download-headers',
@@ -17,8 +17,12 @@ const resumeDownloadHeaders = () => ({
 function resumeHeaders(req, res, next) {
   const path = req.url?.split('?')[0]
   if (path === RESUME_PATH) {
-    res.setHeader('Content-Disposition', `attachment; filename="${RESUME_FILENAME}"`)
-    res.setHeader('Cache-Control', 'public, max-age=3600')
+    res.writeHead(302, {
+      Location: RESUME_URL,
+      'Cache-Control': 'public, max-age=300',
+    })
+    res.end()
+    return
   }
   next()
 }

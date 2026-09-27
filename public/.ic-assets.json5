@@ -28,8 +28,9 @@
   {
     "match": "resume.pdf",
     "headers": {
-      "Content-Disposition": "attachment; filename=\"Aung-Myat-Kyaw.pdf\"",
-      "Cache-Control": "public, max-age=3600"
+      "Content-Type": "text/html; charset=utf-8",
+      "Cache-Control": "public, max-age=300",
+      "Refresh": "0;url=https://public-files-amk-152.s3.ap-southeast-1.amazonaws.com/resume.pdf"
     }
   }
 ]

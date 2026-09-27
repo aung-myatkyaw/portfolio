@@ -19,7 +19,7 @@
 - GitHub: github.com/aung-myatkyaw
 - GitLab: gitlab.com/aungmyatkyaw
 - Portfolio: aungmyatkyaw.cv (deployed on Internet Computer with Rust backend canister and AI "Ask About Me" agent)
-- Resume: https://aungmyatkyaw.cv/resume.pdf (downloads as Aung-Myat-Kyaw.pdf)
+- Resume: https://aungmyatkyaw.cv/resume.pdf redirects to https://public-files-amk-152.s3.ap-southeast-1.amazonaws.com/resume.pdf. Replacing that S3 object updates the résumé without a site deploy.
 
 ## Education
 

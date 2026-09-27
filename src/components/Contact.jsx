@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { useState, useCallback, useRef } from 'react';
 import { FaLinkedin, FaGithub, FaGitlab } from 'react-icons/fa';
 import { FiCpu, FiDownload, FiMessageCircle, FiMail, FiMapPin, FiSend } from 'react-icons/fi';
-import { RESUME_FILENAME, RESUME_PATH } from '../lib/resume';
+import { RESUME_FILENAME, RESUME_URL } from '../lib/resume';
 import { useInView } from 'react-intersection-observer';
 import emailjs from '@emailjs/browser';
 import { Turnstile } from '@marsidev/react-turnstile';
@@ -51,9 +51,8 @@ const contactInfo = [
   {
     label: 'Resume',
     value: RESUME_FILENAME,
-    href: RESUME_PATH,
-    download: RESUME_FILENAME,
-    external: false,
+    href: RESUME_URL,
+    external: true,
     icon: FiDownload,
   },
 ];
@@ -321,7 +320,6 @@ const Contact = () => {
                 >
                   <a
                     href={info.href}
-                    download={info.download}
                     target={info.external ? '_blank' : undefined}
                     rel={info.external ? 'noopener noreferrer' : undefined}
                     className="flex items-start gap-3 py-3 group"
