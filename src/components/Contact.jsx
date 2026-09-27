@@ -1,7 +1,8 @@
 import { motion } from 'framer-motion';
 import { useState, useCallback, useRef } from 'react';
 import { FaLinkedin, FaGithub, FaGitlab } from 'react-icons/fa';
-import { FiCpu, FiMessageCircle, FiMail, FiMapPin, FiSend } from 'react-icons/fi';
+import { FiCpu, FiDownload, FiMessageCircle, FiMail, FiMapPin, FiSend } from 'react-icons/fi';
+import { RESUME_FILENAME, RESUME_PATH } from '../lib/resume';
 import { useInView } from 'react-intersection-observer';
 import emailjs from '@emailjs/browser';
 import { Turnstile } from '@marsidev/react-turnstile';
@@ -37,6 +38,7 @@ const contactInfo = [
     value: 'aungmyatkyaw.kk@gmail.com',
     href: 'mailto:aungmyatkyaw.kk@gmail.com',
     external: false,
+    icon: FiMail,
   },
   {
     label: 'Location',
@@ -44,6 +46,15 @@ const contactInfo = [
     sub: 'Open to remote / hybrid',
     href: 'https://maps.google.com/?q=Bangkok+Thailand',
     external: true,
+    icon: FiMapPin,
+  },
+  {
+    label: 'Resume',
+    value: RESUME_FILENAME,
+    href: RESUME_PATH,
+    download: RESUME_FILENAME,
+    external: false,
+    icon: FiDownload,
   },
 ];
 
@@ -310,16 +321,13 @@ const Contact = () => {
                 >
                   <a
                     href={info.href}
+                    download={info.download}
                     target={info.external ? '_blank' : undefined}
                     rel={info.external ? 'noopener noreferrer' : undefined}
                     className="flex items-start gap-3 py-3 group"
                   >
                     <div className="mt-0.5 text-primary-500 dark:text-primary-400 flex-shrink-0">
-                      {info.label === 'Email' ? (
-                        <FiMail className="w-4 h-4" />
-                      ) : (
-                        <FiMapPin className="w-4 h-4" />
-                      )}
+                      <info.icon className="w-4 h-4" />
                     </div>
                     <div className="min-w-0">
                       <p className="text-[10px] font-mono text-gray-400 dark:text-gray-500 uppercase tracking-wider">
