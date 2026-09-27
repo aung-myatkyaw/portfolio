@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { FaGithub, FaLinkedin, FaGitlab } from 'react-icons/fa';
 import { FiDownload } from 'react-icons/fi';
 import { getHomeExperienceTagline } from '../lib/career';
-import { RESUME_FILENAME, RESUME_PATH } from '../lib/resume';
+import { RESUME_URL } from '../lib/resume';
 import TerminalHero from './TerminalHero';
 import SelectedWork from './SelectedWork';
 import ArchitectureShowcase from './ArchitectureShowcase';
@@ -120,8 +120,9 @@ const Home = () => {
                 Contact Me
               </motion.a>
               <motion.a
-                href={RESUME_PATH}
-                download={RESUME_FILENAME}
+                href={RESUME_URL}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="inline-flex items-center justify-center gap-2 px-2 py-2 text-sm font-mono text-gray-500 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
