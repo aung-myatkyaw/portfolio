@@ -2,12 +2,33 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { compression } from 'vite-plugin-compression2'
+import { RESUME_FILENAME, RESUME_PATH } from './src/lib/resume.js'
+
+const resumeDownloadHeaders = () => ({
+  name: 'resume-download-headers',
+  configureServer(server) {
+    server.middlewares.use(resumeHeaders)
+  },
+  configurePreviewServer(server) {
+    server.middlewares.use(resumeHeaders)
+  },
+})
+
+function resumeHeaders(req, res, next) {
+  const path = req.url?.split('?')[0]
+  if (path === RESUME_PATH) {
+    res.setHeader('Content-Disposition', `attachment; filename="${RESUME_FILENAME}"`)
+    res.setHeader('Cache-Control', 'public, max-age=3600')
+  }
+  next()
+}
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
+    resumeDownloadHeaders(),
     // Gzip for broad compatibility
     compression({ algorithm: 'gzip', exclude: [/\.(br)$/, /\.(gz)$/] }),
     // Brotli — ICP asset canisters serve this natively, ~20% smaller than gzip

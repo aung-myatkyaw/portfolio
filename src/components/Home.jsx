@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
 import { FaGithub, FaLinkedin, FaGitlab } from 'react-icons/fa';
+import { FiDownload } from 'react-icons/fi';
 import { getHomeExperienceTagline } from '../lib/career';
+import { RESUME_FILENAME, RESUME_PATH } from '../lib/resume';
 import TerminalHero from './TerminalHero';
 import SelectedWork from './SelectedWork';
 import ArchitectureShowcase from './ArchitectureShowcase';
@@ -96,7 +98,7 @@ const Home = () => {
             </motion.div>
 
             <motion.div
-              className="flex flex-col sm:flex-row justify-center lg:justify-start gap-4"
+              className="flex flex-col sm:flex-row sm:items-center justify-center lg:justify-start gap-4"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}
@@ -116,6 +118,16 @@ const Home = () => {
                 whileTap={{ scale: 0.95 }}
               >
                 Contact Me
+              </motion.a>
+              <motion.a
+                href={RESUME_PATH}
+                download={RESUME_FILENAME}
+                className="inline-flex items-center justify-center gap-2 px-2 py-2 text-sm font-mono text-gray-500 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <FiDownload className="w-4 h-4" />
+                Download resume
               </motion.a>
             </motion.div>
           </motion.div>
