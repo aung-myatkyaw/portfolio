@@ -2,6 +2,7 @@ import { createContext, useState, useCallback, useRef } from 'react';
 import PropTypes from 'prop-types';
 import {
   getActor,
+  historyForRequest,
   resetActorCache,
   WELCOME_MESSAGE,
 } from '../lib/askMeActor';
@@ -24,6 +25,7 @@ export const AskMeProvider = ({ children }) => {
     const q = question.trim();
     if (!q || isLoading) return;
 
+    const history = historyForRequest(messages);
     setMessages((prev) => [...prev, { role: 'user', content: q }]);
     setInput('');
     setIsLoading(true);
@@ -35,7 +37,7 @@ export const AskMeProvider = ({ children }) => {
     for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
       try {
         const actor = await getActor();
-        const result = await actor.ask_about_me(q);
+        const result = await actor.ask_about_me(q, history);
 
         if ('Ok' in result) {
           setMessages((prev) => [...prev, { role: 'assistant', content: result.Ok }]);
@@ -64,6 +66,7 @@ export const AskMeProvider = ({ children }) => {
         ...prev,
         {
           role: 'assistant',
+          excludeFromHistory: true,
           content: isTimeout
             ? 'The AI is taking longer than usual — ICP enforces a 30s consensus limit. Please try again.'
             : `Sorry, I ran into an issue: ${lastErr}`,
@@ -73,7 +76,7 @@ export const AskMeProvider = ({ children }) => {
 
     setIsLoading(false);
     inputRef.current?.focus();
-  }, [isLoading]);
+  }, [isLoading, messages]);
 
   const lastAssistantMessage = messages
     .filter((m) => m.role === 'assistant')

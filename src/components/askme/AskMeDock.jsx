@@ -1,6 +1,6 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiCpu, FiX } from 'react-icons/fi';
+import { FiCpu, FiMaximize2, FiMinimize2, FiX } from 'react-icons/fi';
 import { useAskMe } from '../../hooks/useAskMe';
 import { isAskMeConfigured } from '../../lib/askMeActor';
 import TerminalWindow from '../TerminalWindow';
@@ -8,6 +8,7 @@ import AskMePanel from './AskMePanel';
 
 const AskMeDock = () => {
   const { isOpen, close, toggle } = useAskMe();
+  const [expanded, setExpanded] = useState(false);
   const triggerRef = useRef(null);
   const panelRef = useRef(null);
   const isConfigured = isAskMeConfigured();
@@ -48,6 +49,10 @@ const AskMeDock = () => {
       }, 100);
       return () => clearTimeout(timer);
     }
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (!isOpen) setExpanded(false);
   }, [isOpen]);
 
   return (
@@ -101,19 +106,31 @@ const AskMeDock = () => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 24, scale: 0.98 }}
             transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-            className="fixed z-50
-                       inset-x-0 bottom-0 max-h-[92vh] overflow-y-auto
-                       sm:inset-auto sm:bottom-24 sm:right-6 sm:w-[440px] sm:max-h-[calc(100vh-7rem)]"
+            className={`fixed z-50 flex flex-col
+                       inset-x-0 bottom-0
+                       sm:inset-auto sm:bottom-24 sm:right-6
+                       ${expanded
+                         ? 'h-[92vh] overflow-hidden sm:h-[calc(100vh-7rem)] sm:w-[min(42rem,calc(100vw-3rem))]'
+                         : 'max-h-[92vh] overflow-y-auto sm:w-[440px] sm:max-h-[calc(100vh-7rem)]'}`}
           >
             <TerminalWindow
               title="ask-about-me"
-              bodyClassName="p-5 sm:p-5"
+              bodyClassName={expanded ? 'p-5 flex-1 min-h-0 flex flex-col overflow-hidden' : 'p-5'}
               headerRight={
                 <div className="flex items-center gap-2">
                   <span className="status-badge hidden sm:inline-flex">
                     <span className="status-badge-dot" />
                     ICP Canister
                   </span>
+                  <button
+                    type="button"
+                    onClick={() => setExpanded((open) => !open)}
+                    aria-pressed={expanded}
+                    aria-label={expanded ? 'Shrink AI chat' : 'Expand AI chat'}
+                    className="p-1 rounded-md text-gray-500 dark:text-slate-400 hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors"
+                  >
+                    {expanded ? <FiMinimize2 className="w-4 h-4" /> : <FiMaximize2 className="w-4 h-4" />}
+                  </button>
                   <button
                     type="button"
                     onClick={close}
@@ -124,9 +141,9 @@ const AskMeDock = () => {
                   </button>
                 </div>
               }
-              className="shadow-2xl dark:shadow-cyan-900/20 sm:rounded-lg rounded-t-xl"
+              className={`shadow-2xl dark:shadow-cyan-900/20 sm:rounded-lg rounded-t-xl ${expanded ? 'h-full min-h-0 flex-1 flex flex-col' : ''}`}
             >
-              <AskMePanel variant="dock" />
+              <AskMePanel variant="dock" expanded={expanded} />
             </TerminalWindow>
           </motion.div>
         )}

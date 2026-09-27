@@ -80,7 +80,7 @@ Message.propTypes = {
   }).isRequired,
 };
 
-const AskMePanel = ({ variant = 'default' }) => {
+const AskMePanel = ({ variant = 'default', expanded = false }) => {
   const {
     messages,
     input,
@@ -124,11 +124,15 @@ const AskMePanel = ({ variant = 'default' }) => {
   }
 
   return (
-    <div className="w-full flex flex-col gap-1">
+    <div className={`w-full flex flex-col gap-1 ${expanded ? 'h-full min-h-0 flex-1' : ''}`}>
       <div
         ref={chatContainerRef}
         className={`panel overflow-y-auto flex flex-col gap-5 scroll-smooth ${
-          isDock ? 'h-80 min-h-[280px] p-4' : 'h-72 p-4 mb-1'
+          expanded
+            ? 'flex-1 min-h-0 p-4'
+            : isDock
+              ? 'h-80 min-h-[280px] p-4'
+              : 'h-72 p-4 mb-1'
         }`}
       >
         <AnimatePresence initial={false}>
@@ -183,6 +187,7 @@ const AskMePanel = ({ variant = 'default' }) => {
         </motion.button>
       </form>
 
+      {!expanded && (
       <div className="pt-4">
         <p className="text-xs text-gray-400 dark:text-gray-500 mb-3 font-mono leading-relaxed">
           {'// not sure where to start?'}
@@ -203,14 +208,15 @@ const AskMePanel = ({ variant = 'default' }) => {
           ))}
         </div>
       </div>
+      )}
 
-      <div className="mt-5 pt-4 border-t border-gray-200/80 dark:border-slate-700/50 space-y-2.5">
+      <div className={`mt-5 pt-4 border-t border-gray-200/80 dark:border-slate-700/50 space-y-2.5 ${expanded ? 'hidden' : ''}`}>
         <p className="text-[11px] leading-relaxed text-gray-500 dark:text-gray-400">
-          Rust canister on ICP · LLaMA 3.1 8B via OpenRouter · ~10–15s response time
+          Rust canister on ICP · Gemini 2.5 Flash Lite via OpenRouter · ~10–15s response time
         </p>
         <p className="text-[11px] leading-relaxed text-gray-500 dark:text-gray-400 flex items-start gap-2">
           <FiShield className="w-3.5 h-3.5 text-green-500 dark:text-green-400 flex-shrink-0 mt-0.5" />
-          <span>No memory between messages · nothing stored on-chain</span>
+          <span>This chat remembers recent questions · nothing stored on-chain</span>
         </p>
       </div>
     </div>
@@ -219,6 +225,7 @@ const AskMePanel = ({ variant = 'default' }) => {
 
 AskMePanel.propTypes = {
   variant: PropTypes.oneOf(['default', 'dock']),
+  expanded: PropTypes.bool,
 };
 
 export default AskMePanel;
